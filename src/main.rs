@@ -1,0 +1,17 @@
+mod cpu;
+
+fn main() {
+    // Testing the INC and DEC instructions
+    let ops = [
+        0x03, 0x04, 0x05, 0x0b, 0x0c, 0x0d, 0x13, 0x14, 0x15, 0x1b, 0x1c, 0x1d, 0x23, 0x24, 0x25,
+        0x2b, 0x2c, 0x2d, 0x33, 0x3b, 0x3c, 0x3d,
+    ];
+
+    for i in ops {
+        let mut cpu = cpu::Cpu::reset();
+        println!("Before: {:?}", cpu);
+        cpu.step_op(i);
+        println!("After: {:?}", cpu);
+        println!("----");
+    }
+}
