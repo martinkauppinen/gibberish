@@ -49,10 +49,10 @@ pub fn sp(cpu: &mut Cpu) {
 pub fn hl_ind(cpu: &mut Cpu) {
     cpu.registers.f.n = false;
 
-    let value_old = cpu.get_byte(cpu.registers.hl());
+    let value_old = cpu.read_byte(cpu.registers.hl());
     let value_new = value_old.wrapping_add(1);
 
-    cpu.put_byte(cpu.registers.hl(), value_new);
+    cpu.write_byte(value_new, cpu.registers.hl());
     cpu.registers.f.h = super::half_carry(value_old, value_new);
 
     if value_new == 0 {

@@ -1,10 +1,12 @@
 mod opcodes;
+use crate::memory::map::MemoryMap;
 use opcodes::OpCode;
 
 #[derive(Debug, Clone)]
 pub struct Cpu {
     registers: Registers,
     machine_cycles: u8,
+    memory: MemoryMap,
 }
 
 impl Cpu {
@@ -28,13 +30,14 @@ impl Cpu {
                 l: 0,
             },
             machine_cycles: 0,
+            memory: MemoryMap::new(),
         }
     }
 
     /// Step through one instrucion
     pub fn step(&mut self) {
         let OpCode(mnemonic, func, size, cycles) =
-            opcodes::OPCODES[self.get_byte(self.registers.pc) as usize];
+            opcodes::OPCODES[self.read_byte(self.registers.pc) as usize];
         func(self);
         self.registers.pc = self.registers.pc.wrapping_add(size as u16);
         self.machine_cycles = cycles;
@@ -50,47 +53,33 @@ impl Cpu {
     }
 
     /// Store a byte at a memory address
-    pub fn put_byte(&mut self, addr: u16, byte: u8) {
-        // TODO: Implement memory
-        // self.bus.write(addr, byte);
+    pub fn write_byte(&mut self, byte: u8, addr: u16) {
+        self.memory.write_byte(byte, addr);
     }
 
     /// Retrieve a byte from a memory address
-    pub fn get_byte(&self, addr: u16) -> u8 {
-        // TODO: Implement memory
-        // self.bus.read(addr);
-        0
+    pub fn read_byte(&self, addr: u16) -> u8 {
+        self.memory.read_byte(addr)
     }
 
     /// Store a word at a memory address
-    pub fn put_word(&mut self, addr: u16, word: u16) {
-        // TODO: Implement memory
-        // self.bus.write(addr, (word & 0xff) as u8);
-        // self.bus.write(addr + 1, (word >> 8) as u8);
+    pub fn write_word(&mut self, word: u16, addr: u16) {
+        self.memory.write_word(word, addr);
     }
 
     /// Retrieve a word from a memory address
-    pub fn get_word(&self, addr: u16) -> u16 {
-        // TODO: Implement memory
-        // let lo = self.bus.read(addr) as u16;
-        // let hi = self.bus.read(addr + 1) as u16;
-        // (hi << 8) | lo
-        0
+    pub fn read_word(&self, addr: u16) -> u16 {
+        self.memory.read_word(addr)
     }
 
     /// Get byte argument of instruction
     pub fn get_byte_argument(&mut self) -> u8 {
-        // TODO: Implement memory
-        // self.bus.read(self.regisers.pc + 1)
-        0
+        self.read_byte(self.registers.pc + 1)
     }
 
     /// Get word argument of instruction
     pub fn get_word_argument(&mut self) -> u16 {
-        // TODO: Implement memory
-        // let lo = self.bus.read(self.regisers.pc + 1);
-        // let hi = self.bus.read(self.regisers.pc + 2);
-        0
+        self.read_word(self.registers.pc + 1)
     }
 }
 
