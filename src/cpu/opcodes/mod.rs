@@ -95,7 +95,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD B, E"      , ld::b::e,             1, 1),
     OpCode("LD B, H"      , ld::b::h,             1, 1),
     OpCode("LD B, L"      , ld::b::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD B, (HL)"   , ld::b::hl_ind,        1, 2),
     OpCode("LD B, A"      , ld::b::a,             1, 1),
     OpCode("LD C, B"      , ld::c::b,             1, 1),
     OpCode("LD C, C"      , ld::c::c,             1, 1),
@@ -103,7 +103,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD C, E"      , ld::c::e,             1, 1),
     OpCode("LD C, H"      , ld::c::h,             1, 1),
     OpCode("LD C, L"      , ld::c::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD C, (HL)"   , ld::c::hl_ind,        1, 2),
     OpCode("LD C, A"      , ld::c::a,             1, 1),
 
     // 0x5_
@@ -113,7 +113,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD D, E"      , ld::d::e,             1, 1),
     OpCode("LD D, H"      , ld::d::h,             1, 1),
     OpCode("LD D, L"      , ld::d::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD D, (HL)"   , ld::d::hl_ind,        1, 2),
     OpCode("LD D, A"      , ld::d::a,             1, 1),
     OpCode("LD E, B"      , ld::e::b,             1, 1),
     OpCode("LD E, C"      , ld::e::c,             1, 1),
@@ -121,7 +121,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD E, E"      , ld::e::e,             1, 1),
     OpCode("LD E, H"      , ld::e::h,             1, 1),
     OpCode("LD E, L"      , ld::e::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD E, (HL)"   , ld::e::hl_ind,        1, 2),
     OpCode("LD E, A"      , ld::e::a,             1, 1),
 
     // 0x6_
@@ -131,7 +131,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD H, E"      , ld::h::e,             1, 1),
     OpCode("LD H, H"      , ld::h::h,             1, 1),
     OpCode("LD H, L"      , ld::h::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD H, (HL)"   , ld::h::hl_ind,        1, 2),
     OpCode("LD H, A"      , ld::h::a,             1, 1),
     OpCode("LD L, B"      , ld::l::b,             1, 1),
     OpCode("LD L, C"      , ld::l::c,             1, 1),
@@ -139,7 +139,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD L, E"      , ld::l::e,             1, 1),
     OpCode("LD L, H"      , ld::l::h,             1, 1),
     OpCode("LD L, L"      , ld::l::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD L, (HL)"   , ld::l::hl_ind,        1, 2),
     OpCode("LD L, A"      , ld::l::a,             1, 1),
 
     // 0x7_
@@ -157,7 +157,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD A, E"      , ld::a::e,             1, 1),
     OpCode("LD A, H"      , ld::a::h,             1, 1),
     OpCode("LD A, L"      , ld::a::l,             1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD A, (HL)"   , ld::a::hl_ind,        1, 2),
     OpCode("LD A, A"      , ld::a::a,             1, 1),
 
     // 0x8_

@@ -14,6 +14,12 @@ macro_rules! ld {
         pub fn imm(cpu: &mut crate::cpu::Cpu)  {
             cpu.registers.$dst = cpu.get_byte_argument();
         }
+
+        /// Load register with value in memory pointed to by HL
+        /// - - - -
+        pub fn hl_ind(cpu: &mut crate::cpu::Cpu) {
+            cpu.registers.$dst = cpu.read_byte(cpu.registers.hl());
+        }
     };
 }
 
@@ -53,6 +59,16 @@ mod test {
                     let mut cpu = Cpu::reset();
                     cpu.write_byte(value, cpu.registers.pc + 1);
                     super::super::$dst::imm(&mut cpu);
+                    assert_eq!(cpu.registers.$dst, value);
+                }
+
+                #[test]
+                fn hl_ind() {
+                    let value = 0xAB;
+                    let mut cpu = Cpu::reset();
+                    cpu.write_byte(value, 0x100);
+                    cpu.registers.put_hl(0x100);
+                    super::super::$dst::hl_ind(&mut cpu);
                     assert_eq!(cpu.registers.$dst, value);
                 }
             }
