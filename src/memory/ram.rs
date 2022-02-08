@@ -10,7 +10,7 @@ impl Ram {
         Self {
             start,
             end,
-            memory: Vec::with_capacity((end - start + 1) as usize),
+            memory: vec![0; ((end - start) + 1) as usize],
         }
     }
 
