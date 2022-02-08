@@ -47,7 +47,7 @@ pub fn sp(cpu: &mut Cpu) {
 /// Decrement the value at the address pointed to by HL
 /// Z 1 H -
 pub fn hl_ind(cpu: &mut Cpu) {
-    cpu.registers.f.n = false;
+    cpu.registers.f.n = true;
 
     let value_old = cpu.read_byte(cpu.registers.hl());
     let value_new = value_old.wrapping_sub(1);
@@ -57,5 +57,155 @@ pub fn hl_ind(cpu: &mut Cpu) {
 
     if value_new == 0 {
         cpu.registers.f.z = true;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    macro_rules! test_reg {
+        ($reg:ident) => {
+            mod $reg {
+                use crate::cpu::Cpu;
+
+                fn setup(init: u8) -> Cpu {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg = init;
+                    super::super::$reg(&mut cpu);
+                    cpu
+                }
+
+                #[test]
+                fn simple_dec() {
+                    let cpu = setup(3);
+                    assert_eq!(cpu.registers.$reg, 2);
+                    assert!(!cpu.registers.f.z);
+                    assert!(cpu.registers.f.n);
+                    assert!(!cpu.registers.f.h);
+                }
+
+                #[test]
+                fn half_carry() {
+                    let cpu = setup(0xF0);
+                    assert_eq!(cpu.registers.$reg, 0xEF);
+                    assert!(!cpu.registers.f.z);
+                    assert!(cpu.registers.f.n);
+                    assert!(cpu.registers.f.h);
+                }
+
+                #[test]
+                fn underflow_zero() {
+                    let cpu = setup(0);
+                    assert_eq!(cpu.registers.$reg, 0xFF);
+                    assert!(!cpu.registers.f.z);
+                    assert!(cpu.registers.f.n);
+                    assert!(cpu.registers.f.h);
+                }
+            }
+        };
+    }
+
+    macro_rules! test_reg_pair {
+        ($func:ident, $reg_hi:ident, $reg_lo:ident) => {
+            mod $func {
+                use crate::cpu::Cpu;
+
+                #[test]
+                fn simple_dec() {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg_lo = 3;
+                    super::super::$func(&mut cpu);
+                    assert_eq!(cpu.registers.$reg_lo, 2);
+                    assert_eq!(cpu.registers.$reg_hi, 0);
+                }
+
+                #[test]
+                fn carry_bytes() {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg_lo = 0;
+                    cpu.registers.$reg_hi = 0xFF;
+                    super::super::$func(&mut cpu);
+                    assert_eq!(cpu.registers.$func(), 0xFE_FF);
+                }
+
+                #[test]
+                fn underflow_zero() {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg_hi = 0;
+                    cpu.registers.$reg_lo = 0;
+                    super::super::$func(&mut cpu);
+                    assert_eq!(cpu.registers.$func(), 0xFF_FF);
+                }
+            }
+        };
+    }
+
+    test_reg!(a);
+    test_reg!(b);
+    test_reg!(c);
+    test_reg!(d);
+    test_reg!(e);
+    test_reg!(h);
+    test_reg!(l);
+    test_reg_pair!(bc, b, c);
+    test_reg_pair!(de, d, e);
+    test_reg_pair!(hl, h, l);
+
+    mod sp {
+        use crate::cpu::Cpu;
+
+        #[test]
+        fn simple_dec() {
+            let mut cpu = Cpu::reset();
+            cpu.registers.sp = 3;
+            super::super::sp(&mut cpu);
+            assert_eq!(cpu.registers.sp, 2);
+        }
+
+        #[test]
+        fn underflow_zero() {
+            let mut cpu = Cpu::reset();
+            cpu.registers.sp = 0;
+            super::super::sp(&mut cpu);
+            assert_eq!(cpu.registers.sp, 0xFF_FF);
+        }
+    }
+
+    mod hl_ind {
+        use crate::cpu::Cpu;
+
+        fn setup(init: u8, addr: u16) -> Cpu {
+            let mut cpu = Cpu::reset();
+            cpu.registers.put_hl(addr);
+            cpu.write_byte(init, addr);
+            super::super::hl_ind(&mut cpu);
+            cpu
+        }
+
+        #[test]
+        fn simple_dec() {
+            let cpu = setup(3, 0x100);
+            assert_eq!(cpu.read_byte(0x100), 2);
+            assert!(!cpu.registers.f.z);
+            assert!(cpu.registers.f.n);
+            assert!(!cpu.registers.f.h);
+        }
+
+        #[test]
+        fn half_carry() {
+            let cpu = setup(0xF0, 0x100);
+            assert_eq!(cpu.read_byte(0x100), 0xEF);
+            assert!(!cpu.registers.f.z);
+            assert!(cpu.registers.f.n);
+            assert!(cpu.registers.f.h);
+        }
+
+        #[test]
+        fn underflow_zero() {
+            let cpu = setup(0, 0x100);
+            assert_eq!(cpu.read_byte(0x100), 0xFF);
+            assert!(!cpu.registers.f.z);
+            assert!(cpu.registers.f.n);
+            assert!(cpu.registers.f.h);
+        }
     }
 }

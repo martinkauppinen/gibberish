@@ -59,3 +59,152 @@ pub fn hl_ind(cpu: &mut Cpu) {
         cpu.registers.f.z = true;
     }
 }
+
+#[cfg(test)]
+mod test {
+    macro_rules! test_reg {
+        ($reg:ident) => {
+            mod $reg {
+                use crate::cpu::Cpu;
+
+                fn setup(init: u8) -> Cpu {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg = init;
+                    super::super::$reg(&mut cpu);
+                    cpu
+                }
+
+                #[test]
+                fn simple_inc() {
+                    let cpu = setup(3);
+                    assert_eq!(cpu.registers.$reg, 4);
+                    assert!(!cpu.registers.f.z);
+                    assert!(!cpu.registers.f.n);
+                    assert!(!cpu.registers.f.h);
+                }
+
+                #[test]
+                fn half_carry() {
+                    let cpu = setup(0xF);
+                    assert_eq!(cpu.registers.$reg, 0x10);
+                    assert!(!cpu.registers.f.z);
+                    assert!(!cpu.registers.f.n);
+                    assert!(cpu.registers.f.h);
+                }
+
+                #[test]
+                fn overflow_zero() {
+                    let cpu = setup(0xFF);
+                    assert_eq!(cpu.registers.$reg, 0x00);
+                    assert!(cpu.registers.f.z);
+                    assert!(!cpu.registers.f.n);
+                    assert!(cpu.registers.f.h);
+                }
+            }
+        };
+    }
+
+    macro_rules! test_reg_pair {
+        ($func:ident, $reg_hi:ident, $reg_lo:ident) => {
+            mod $func {
+                use crate::cpu::Cpu;
+
+                #[test]
+                fn simple_inc() {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg_lo = 3;
+                    super::super::$func(&mut cpu);
+                    assert_eq!(cpu.registers.$reg_lo, 4);
+                    assert_eq!(cpu.registers.$reg_hi, 0);
+                }
+
+                #[test]
+                fn carry_bytes() {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg_lo = 0xFF;
+                    super::super::$func(&mut cpu);
+                    assert_eq!(cpu.registers.$func(), 0x01_00);
+                }
+
+                #[test]
+                fn overflow_zero() {
+                    let mut cpu = Cpu::reset();
+                    cpu.registers.$reg_hi = 0xFF;
+                    cpu.registers.$reg_lo = 0xFF;
+                    super::super::$func(&mut cpu);
+                    assert_eq!(cpu.registers.$func(), 0);
+                }
+            }
+        };
+    }
+
+    test_reg!(a);
+    test_reg!(b);
+    test_reg!(c);
+    test_reg!(d);
+    test_reg!(e);
+    test_reg!(h);
+    test_reg!(l);
+    test_reg_pair!(bc, b, c);
+    test_reg_pair!(de, d, e);
+    test_reg_pair!(hl, h, l);
+
+    mod sp {
+        use crate::cpu::Cpu;
+
+        #[test]
+        fn simple_inc() {
+            let mut cpu = Cpu::reset();
+            cpu.registers.sp = 3;
+            super::super::sp(&mut cpu);
+            assert_eq!(cpu.registers.sp, 4);
+        }
+
+        #[test]
+        fn overflow_zero() {
+            let mut cpu = Cpu::reset();
+            cpu.registers.sp = 0xFF_FF;
+            super::super::sp(&mut cpu);
+            assert_eq!(cpu.registers.sp, 0);
+        }
+    }
+
+    mod hl_ind {
+        use crate::cpu::Cpu;
+
+        fn setup(init: u8, addr: u16) -> Cpu {
+            let mut cpu = Cpu::reset();
+            cpu.registers.put_hl(addr);
+            cpu.write_byte(init, addr);
+            super::super::hl_ind(&mut cpu);
+            cpu
+        }
+
+        #[test]
+        fn simple_inc() {
+            let cpu = setup(3, 0x100);
+            assert_eq!(cpu.read_byte(0x100), 4);
+            assert!(!cpu.registers.f.z);
+            assert!(!cpu.registers.f.n);
+            assert!(!cpu.registers.f.h);
+        }
+
+        #[test]
+        fn half_carry() {
+            let cpu = setup(0x0F, 0x100);
+            assert_eq!(cpu.read_byte(0x100), 0x10);
+            assert!(!cpu.registers.f.z);
+            assert!(!cpu.registers.f.n);
+            assert!(cpu.registers.f.h);
+        }
+
+        #[test]
+        fn overflow_zero() {
+            let cpu = setup(0xFF, 0x100);
+            assert_eq!(cpu.read_byte(0x100), 0x00);
+            assert!(cpu.registers.f.z);
+            assert!(!cpu.registers.f.n);
+            assert!(cpu.registers.f.h);
+        }
+    }
+}
