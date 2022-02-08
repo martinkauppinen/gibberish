@@ -317,5 +317,4 @@ fn half_carry(old: u8, new: u8) -> bool {
 
 /// 0x00: No operation
 /// - - - -
-fn nop(_: &mut Cpu) {
-}
+fn nop(_: &mut Cpu) {}
