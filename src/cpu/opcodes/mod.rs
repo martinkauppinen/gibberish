@@ -23,7 +23,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC BC"       , inc::bc,              1, 2),
     OpCode("INC B"        , inc::b,               1, 1),
     OpCode("DEC B"        , dec::b,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD B, d8"     , ld::b::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -31,7 +31,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC BC"       , dec::bc,              1, 2),
     OpCode("INC C"        , inc::c,               1, 1),
     OpCode("DEC C"        , dec::c,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD C, d8"     , ld::c::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0x1_
@@ -41,7 +41,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC DE"       , inc::de,              1, 2),
     OpCode("INC D"        , inc::d,               1, 1),
     OpCode("DEC D"        , dec::d,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD D, d8"     , ld::d::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -49,7 +49,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC DE"       , dec::de,              1, 2),
     OpCode("INC E"        , inc::e,               1, 1),
     OpCode("DEC E"        , dec::e,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD E, d8"     , ld::e::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0x2_
@@ -59,7 +59,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC HL"       , inc::hl,              1, 2),
     OpCode("INC H"        , inc::h,               1, 1),
     OpCode("DEC H"        , dec::h,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD H, d8"     , ld::h::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -67,7 +67,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC HL"       , dec::hl,              1, 2),
     OpCode("INC L"        , inc::l,               1, 1),
     OpCode("DEC L"        , dec::l,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD L, d8"     , ld::l::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0x3_
@@ -85,7 +85,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC SP"       , dec::sp,              1, 2),
     OpCode("INC A"        , inc::a,               1, 1),
     OpCode("DEC A"        , dec::a,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LD A, d8"     , ld::a::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0x4_

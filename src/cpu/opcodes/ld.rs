@@ -8,6 +8,12 @@ macro_rules! ld {
                 cpu.registers.$dst = cpu.registers.$src;
             }
         )+
+
+        /// Load a register with immeditate value
+        /// - - - -
+        pub fn imm(cpu: &mut crate::cpu::Cpu)  {
+            cpu.registers.$dst = cpu.get_byte_argument();
+        }
     };
 }
 
@@ -40,6 +46,15 @@ mod test {
                         assert_eq!(cpu.registers.$dst, cpu.registers.$src);
                     }
                  )+
+
+                #[test]
+                fn imm() {
+                    let value = 0xAB;
+                    let mut cpu = Cpu::reset();
+                    cpu.write_byte(value, cpu.registers.pc + 1);
+                    super::super::$dst::imm(&mut cpu);
+                    assert_eq!(cpu.registers.$dst, value);
+                }
             }
         };
     }
