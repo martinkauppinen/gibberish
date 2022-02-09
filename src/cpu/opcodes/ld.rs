@@ -168,7 +168,11 @@ pub mod hl {
     pub fn sp_add_reg(cpu: &mut crate::cpu::Cpu) {
         let byte = cpu.get_byte_argument();
         let old_h = cpu.registers.h;
-        cpu.registers.put_hl(cpu.registers.sp.wrapping_add(cpu.registers.pc.wrapping_add(byte as i16 as u16)));
+        cpu.registers.put_hl(
+            cpu.registers
+                .sp
+                .wrapping_add(cpu.registers.pc.wrapping_add(byte as i16 as u16)),
+        );
         cpu.registers.f.z = false;
         cpu.registers.f.n = false;
         cpu.registers.f.h = super::super::half_carry(old_h, cpu.registers.h);
@@ -247,9 +251,7 @@ mod test {
     test_reg!(a; b, c, d, e, h, l, a);
 
     macro_rules! test_pair_ind {
-
         ($mod_name:ident, $load_func:ident, $pair:ident, $src:ident) => {
-
             /// Test loading register value into memory pointed to by $pair
             #[test]
             fn $src() {
@@ -277,7 +279,6 @@ mod test {
         };
 
         ($mod_name:ident, $load_func:ident, $pair:ident; imm) => {
-
             /// Test loading immediate value into memory pointed to by $pair
             #[test]
             fn imm() {
@@ -288,7 +289,7 @@ mod test {
                 super::super::$mod_name::imm(&mut cpu);
                 assert_eq!(cpu.read_byte(cpu.registers.$pair()), value);
             }
-        }
+        };
     }
 
     pub mod hl_ind {
