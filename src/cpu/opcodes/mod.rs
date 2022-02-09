@@ -252,7 +252,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("ADC A, d8"    , adc::a::imm,          2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0xD_
