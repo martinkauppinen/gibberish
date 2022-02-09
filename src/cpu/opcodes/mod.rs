@@ -2,6 +2,7 @@ use crate::cpu::Cpu;
 mod dec;
 mod inc;
 mod ld;
+mod ldh;
 
 pub struct OpCode<'a>(
     /// Mnemonic
@@ -269,7 +270,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0xE_
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LDH (a8), A"  , ldh::addr::a,         2, 3),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("LD (C), A"    , ld::c_ind::a,         1, 2),
     OpCode("UDF"          , undefined,            1, 1),
@@ -287,7 +288,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0xF_
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("LDH A, (a8)"  , ldh::a::addr,         2, 3),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("LD A, (C)"    , ld::a::c_ind,         1, 2),
     OpCode("UDF"          , undefined,            1, 1),
