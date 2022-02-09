@@ -75,20 +75,15 @@ pub mod hl {
 }
 
 pub mod sp {
+    use crate::cpu::opcodes::sign_extend;
+
     /// Add sign-extended immediate value to SP
     /// 0 0 H C
     pub fn r8(cpu: &mut crate::cpu::Cpu) {
         let old_sp = cpu.registers.sp;
 
-        // Sign extension
         let byte = cpu.get_byte_argument();
-        let word = if byte & 0x80 != 0 {
-            0xFF00 | byte as u16
-        } else {
-            byte as u16
-        };
-
-        cpu.registers.sp = cpu.registers.sp.wrapping_add(word);
+        cpu.registers.sp = cpu.registers.sp.wrapping_add(sign_extend(byte));
 
         cpu.registers.f.z = false;
         cpu.registers.f.n = false;

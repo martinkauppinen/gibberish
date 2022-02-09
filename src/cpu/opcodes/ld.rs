@@ -163,12 +163,15 @@ pub mod de {
 }
 
 pub mod hl {
+    use crate::cpu::opcodes::sign_extend;
+
     ld_pair_imm!(put_hl);
 
     pub fn sp_add_reg(cpu: &mut crate::cpu::Cpu) {
         let byte = cpu.get_byte_argument();
+
         cpu.registers
-            .put_hl(cpu.registers.sp.wrapping_add(byte as i16 as u16));
+            .put_hl(cpu.registers.sp.wrapping_add(sign_extend(byte)));
         cpu.registers.f.z = false;
         cpu.registers.f.n = false;
         cpu.registers.f.h = super::super::half_carry(
@@ -433,17 +436,17 @@ mod test {
 
         #[test]
         fn sp_add_reg() {
-            let value = 0xAB;
-            let addr = 0x123;
+            let value = 0xFF;
+            let addr = 0xBEEF;
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.sp = addr;
             cpu.write_byte(value, cpu.registers.pc + 1);
             super::super::hl::sp_add_reg(&mut cpu);
-            assert_eq!(cpu.registers.hl(), addr + value as u16);
+            assert_eq!(cpu.registers.hl(), 0xBEEE);
             assert!(!cpu.registers.f.z);
             assert!(!cpu.registers.f.n);
             assert!(!cpu.registers.f.h);
-            assert!(!cpu.registers.f.c);
+            assert!(cpu.registers.f.c);
         }
     }
 

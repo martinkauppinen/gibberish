@@ -317,6 +317,15 @@ fn half_carry(old: u8, new: u8) -> bool {
     old & 0xf0 != new & 0xf0
 }
 
+/// Sign extend 8-bit value to 16-bit
+fn sign_extend(byte: u8) -> u16 {
+    if byte & 0x80 != 0 {
+        0xFF00 | byte as u16
+    } else {
+        byte as u16
+    }
+}
+
 /// 0x00: No operation
 /// - - - -
 fn nop(_: &mut Cpu) {}
