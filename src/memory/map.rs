@@ -108,8 +108,12 @@ const IRAM_ECHO_START: u16 = 0xE000;
 const IRAM_ECHO_END: u16 = 0xFDFF;
 const SPRITE_ATTRS_START: u16 = 0xFE00;
 const SPRITE_ATTRS_END: u16 = 0xFE9F;
+
+#[allow(dead_code)]
 const UNUSABLE_START: u16 = 0xFEA0;
+#[allow(dead_code)]
 const UNUSABLE_END: u16 = 0xFEFF;
+
 const IO_REGS_START: u16 = 0xFF00;
 const IO_REGS_END: u16 = 0xFF7F;
 const HRAM_START: u16 = 0xFF80;

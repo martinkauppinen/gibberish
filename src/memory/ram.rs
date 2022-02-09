@@ -1,7 +1,10 @@
 #[derive(Debug, Clone)]
 pub struct Ram {
     start: u16,
+
+    #[allow(dead_code)]
     end: u16,
+
     memory: Vec<u8>,
 }
 

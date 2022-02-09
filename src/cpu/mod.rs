@@ -34,9 +34,10 @@ impl Cpu {
         }
     }
 
+    #[allow(dead_code)]
     /// Step through one instrucion
     pub fn step(&mut self) {
-        let OpCode(mnemonic, func, size, cycles) =
+        let OpCode(_mnemonic, func, size, cycles) =
             opcodes::OPCODES[self.read_byte(self.registers.pc) as usize];
         func(self);
         self.registers.pc = self.registers.pc.wrapping_add(size as u16);
@@ -98,6 +99,7 @@ struct Registers {
 }
 
 impl Registers {
+    #[allow(dead_code)]
     pub fn af(&self) -> u16 {
         (self.a as u16) << 8 | self.f.value() as u16
     }
@@ -114,6 +116,7 @@ impl Registers {
         (self.h as u16) << 8 | self.l as u16
     }
 
+    #[allow(dead_code)]
     pub fn put_af(&mut self, word: u16) {
         self.a = (word >> 8) as u8;
         self.f.set((word & 0xff) as u8);
@@ -159,6 +162,7 @@ struct FlagRegister {
 }
 
 impl FlagRegister {
+    #[allow(dead_code)]
     pub fn value(&self) -> u8 {
         let mut value = 0u8;
 
@@ -181,6 +185,7 @@ impl FlagRegister {
         value
     }
 
+    #[allow(dead_code)]
     pub fn set(&mut self, value: u8) {
         self.z = (value & 1 << 7) != 0;
         self.n = (value & 1 << 6) != 0;
