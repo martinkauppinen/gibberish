@@ -1,4 +1,5 @@
 use crate::cpu::Cpu;
+mod adc;
 mod add;
 mod dec;
 mod inc;
@@ -172,14 +173,14 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("ADD A, L"     , add::a::l,            1, 1),
     OpCode("ADD A, (HL)"  , add::a::hl_ind,       1, 2),
     OpCode("ADD A, A"     , add::a::a,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("ADC A, B"     , adc::a::b,            1, 1),
+    OpCode("ADC A, C"     , adc::a::c,            1, 1),
+    OpCode("ADC A, D"     , adc::a::d,            1, 1),
+    OpCode("ADC A, E"     , adc::a::e,            1, 1),
+    OpCode("ADC A, H"     , adc::a::h,            1, 1),
+    OpCode("ADC A, L"     , adc::a::l,            1, 1),
+    OpCode("ADC A, (HL)"  , adc::a::hl_ind,       1, 2),
+    OpCode("ADC A, A"     , adc::a::a,            1, 1),
 
     // 0x9_
     OpCode("SUB A, B"     , sub::b,               1, 1),
