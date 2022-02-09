@@ -46,10 +46,10 @@ impl Cpu {
     /// Step through specific opcode
     pub fn step_op(&mut self, op: usize) {
         let OpCode(mnemonic, func, size, cycles) = opcodes::OPCODES[op];
+        println!("{:#04x}: {}", op, mnemonic);
         func(self);
         self.registers.pc = self.registers.pc.wrapping_add(size as u16);
         self.machine_cycles = cycles;
-        println!("{}", mnemonic);
     }
 
     /// Store a byte at a memory address
