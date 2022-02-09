@@ -1,17 +1,18 @@
 mod cpu;
+mod memory;
 
 fn main() {
-    // Testing the INC and DEC instructions
-    let ops = [
-        0x03, 0x04, 0x05, 0x0b, 0x0c, 0x0d, 0x13, 0x14, 0x15, 0x1b, 0x1c, 0x1d, 0x23, 0x24, 0x25,
-        0x2b, 0x2c, 0x2d, 0x33, 0x3b, 0x3c, 0x3d,
+    let mut cpu = cpu::Cpu::reset();
+
+    let unused_codes = [
+        0xd3, 0xdb, 0xdd, 0xe3, 0xe4, 0xeb, 0xec, 0xed, 0xf4, 0xfc, 0xfd,
     ];
 
-    for i in ops {
-        let mut cpu = cpu::Cpu::reset();
-        println!("Before: {:?}", cpu);
+    for i in 0x00..=0xFF {
+        if unused_codes.contains(&i) {
+            continue;
+        }
+
         cpu.step_op(i);
-        println!("After: {:?}", cpu);
-        println!("----");
     }
 }
