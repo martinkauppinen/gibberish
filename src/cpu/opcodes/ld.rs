@@ -75,7 +75,7 @@ pub mod a {
     /// Load A with value pointed to by C
     /// - - - -
     pub fn c_ind(cpu: &mut crate::cpu::Cpu) {
-        cpu.registers.a = cpu.read_byte(cpu.registers.c as u16);
+        cpu.registers.a = cpu.read_byte(0xFF00 + cpu.registers.c as u16);
     }
 }
 
@@ -84,7 +84,7 @@ pub mod c_ind {
     /// Load memory pointed to by C with value of A
     /// - - - -
     pub fn a(cpu: &mut crate::cpu::Cpu) {
-        let addr = cpu.registers.c as u16;
+        let addr = 0xFF00 + cpu.registers.c as u16;
         cpu.write_byte(cpu.registers.a, addr);
     }
 }
@@ -344,7 +344,7 @@ mod test {
             let addr = 0xBA;
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.c = addr;
-            cpu.write_byte(value, cpu.registers.c as u16);
+            cpu.write_byte(value, 0xFF00 + cpu.registers.c as u16);
             super::super::a::c_ind(&mut cpu);
             assert_eq!(cpu.registers.a, value);
         }
@@ -493,7 +493,7 @@ mod test {
             cpu.registers.c = addr;
             cpu.registers.a = value;
             super::super::c_ind::a(&mut cpu);
-            assert_eq!(cpu.read_byte(cpu.registers.c as u16), value);
+            assert_eq!(cpu.read_byte(0xFF00 + cpu.registers.c as u16), value);
         }
     }
 }
