@@ -5,6 +5,7 @@ mod dec;
 mod inc;
 mod ld;
 mod ldh;
+mod sbc;
 mod sub;
 
 pub struct OpCode<'a>(
@@ -191,14 +192,14 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("SUB A, L"     , sub::l,               1, 1),
     OpCode("SUB A, (HL)"  , sub::hl_ind,          1, 2),
     OpCode("SUB A, A"     , sub::a,               1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("SBC A, B"     , sbc::b,               1, 1),
+    OpCode("SBC A, C"     , sbc::c,               1, 1),
+    OpCode("SBC A, D"     , sbc::d,               1, 1),
+    OpCode("SBC A, E"     , sbc::e,               1, 1),
+    OpCode("SBC A, H"     , sbc::h,               1, 1),
+    OpCode("SBC A, L"     , sbc::l,               1, 1),
+    OpCode("SBC A, (HL)"  , sbc::hl_ind,          1, 2),
+    OpCode("SBC A, A"     , sbc::a,               1, 1),
 
     // 0xA_
     OpCode("UDF"          , undefined,            1, 1),
@@ -269,7 +270,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("SBC A, d8"    , sbc::imm,             2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0xE_
