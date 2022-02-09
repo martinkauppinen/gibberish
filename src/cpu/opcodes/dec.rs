@@ -10,7 +10,7 @@ macro_rules! dec {
             let reg_old = cpu.registers.$reg;
 
             cpu.registers.$reg = reg_old.wrapping_sub(1);
-            cpu.registers.f.h = super::half_carry(reg_old, cpu.registers.$reg);
+            cpu.registers.f.h = super::half_carry_add(reg_old, cpu.registers.$reg);
             cpu.registers.f.z = cpu.registers.$reg == 0;
         }
     };
@@ -53,7 +53,7 @@ pub fn hl_ind(cpu: &mut Cpu) {
     let value_new = value_old.wrapping_sub(1);
 
     cpu.write_byte(value_new, cpu.registers.hl());
-    cpu.registers.f.h = super::half_carry(value_old, value_new);
+    cpu.registers.f.h = super::half_carry_add(value_old, value_new);
 
     if value_new == 0 {
         cpu.registers.f.z = true;

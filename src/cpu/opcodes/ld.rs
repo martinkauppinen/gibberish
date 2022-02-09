@@ -174,7 +174,7 @@ pub mod hl {
             .put_hl(cpu.registers.sp.wrapping_add(sign_extend(byte)));
         cpu.registers.f.z = false;
         cpu.registers.f.n = false;
-        cpu.registers.f.h = super::super::half_carry(
+        cpu.registers.f.h = super::super::half_carry_add(
             (cpu.registers.sp >> 8) as u8,
             (cpu.registers.hl() >> 8) as u8,
         );

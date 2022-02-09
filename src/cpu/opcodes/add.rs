@@ -6,7 +6,7 @@ macro_rules! add {
             cpu.registers.f.n = false;
             let a_old = cpu.registers.a;
             cpu.registers.a = cpu.registers.a.wrapping_add(cpu.registers.$src);
-            cpu.registers.f.h = super::super::half_carry(a_old, cpu.registers.a);
+            cpu.registers.f.h = super::super::half_carry_add(a_old, cpu.registers.a);
             cpu.registers.f.c = cpu.registers.a < a_old;
             cpu.registers.f.z = cpu.registers.a == 0;
         }
@@ -20,7 +20,7 @@ macro_rules! add {
             let h_old = cpu.registers.h;
             cpu.registers
                 .put_hl(cpu.registers.hl().wrapping_add(cpu.registers.$src()));
-            cpu.registers.f.h = super::super::half_carry(h_old, cpu.registers.h);
+            cpu.registers.f.h = super::super::half_carry_add(h_old, cpu.registers.h);
             cpu.registers.f.c = cpu.registers.h < h_old;
         }
     };
@@ -39,7 +39,7 @@ pub mod a {
         cpu.registers.f.n = false;
         let a_old = cpu.registers.a;
         cpu.registers.a = cpu.registers.a.wrapping_add(cpu.get_byte_argument());
-        cpu.registers.f.h = super::super::half_carry(a_old, cpu.registers.a);
+        cpu.registers.f.h = super::super::half_carry_add(a_old, cpu.registers.a);
         cpu.registers.f.c = cpu.registers.a < a_old;
         cpu.registers.f.z = cpu.registers.a == 0;
     }
@@ -51,7 +51,7 @@ pub mod a {
             .registers
             .a
             .wrapping_add(cpu.read_byte(cpu.registers.hl()));
-        cpu.registers.f.h = super::super::half_carry(a_old, cpu.registers.a);
+        cpu.registers.f.h = super::super::half_carry_add(a_old, cpu.registers.a);
         cpu.registers.f.c = cpu.registers.a < a_old;
         cpu.registers.f.z = cpu.registers.a == 0;
     }
@@ -69,7 +69,7 @@ pub mod hl {
         let h_old = cpu.registers.h;
         cpu.registers
             .put_hl(cpu.registers.hl().wrapping_add(cpu.registers.sp));
-        cpu.registers.f.h = super::super::half_carry(h_old, cpu.registers.h);
+        cpu.registers.f.h = super::super::half_carry_add(h_old, cpu.registers.h);
         cpu.registers.f.c = cpu.registers.h < h_old;
     }
 }
@@ -88,7 +88,7 @@ pub mod sp {
         cpu.registers.f.z = false;
         cpu.registers.f.n = false;
         cpu.registers.f.h =
-            super::super::half_carry((cpu.registers.sp >> 8) as u8, (old_sp >> 8) as u8);
+            super::super::half_carry_add((cpu.registers.sp >> 8) as u8, (old_sp >> 8) as u8);
         cpu.registers.f.c = cpu.registers.sp < old_sp;
     }
 }

@@ -312,9 +312,16 @@ fn undefined(_: &mut Cpu) {
 }
 
 /// Half carry flag is set if the upper nybble
-/// changed due to an arithmetic operation
-fn half_carry(old: u8, new: u8) -> bool {
+/// changed due to addition operation
+fn half_carry_add(old: u8, new: u8) -> bool {
     old & 0xf0 != new & 0xf0
+}
+
+/// Half carry flag is set if the lower nybble
+/// of the minuend is less than the lower nybble
+/// of the subtrahend
+fn half_carry_sub(minuend: u8, subtrahend: u8) -> bool {
+    minuend & 0x0f < subtrahend & 0x0f
 }
 
 /// Sign extend 8-bit value to 16-bit
