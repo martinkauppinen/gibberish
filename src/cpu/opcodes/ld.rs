@@ -167,16 +167,15 @@ pub mod hl {
 
     pub fn sp_add_reg(cpu: &mut crate::cpu::Cpu) {
         let byte = cpu.get_byte_argument();
-        let old_h = cpu.registers.h;
-        cpu.registers.put_hl(
-            cpu.registers
-                .sp
-                .wrapping_add(cpu.registers.pc.wrapping_add(byte as i16 as u16)),
-        );
+        cpu.registers
+            .put_hl(cpu.registers.sp.wrapping_add(byte as i16 as u16));
         cpu.registers.f.z = false;
         cpu.registers.f.n = false;
-        cpu.registers.f.h = super::super::half_carry(old_h, cpu.registers.h);
-        cpu.registers.f.c = old_h & 1 != cpu.registers.h & 1;
+        cpu.registers.f.h = super::super::half_carry(
+            (cpu.registers.sp >> 8) as u8,
+            (cpu.registers.hl() >> 8) as u8,
+        );
+        cpu.registers.f.c = cpu.registers.hl() < cpu.registers.sp;
     }
 }
 
@@ -438,10 +437,9 @@ mod test {
             let addr = 0x123;
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.sp = addr;
-            cpu.registers.pc = 0x100;
             cpu.write_byte(value, cpu.registers.pc + 1);
             super::super::hl::sp_add_reg(&mut cpu);
-            assert_eq!(cpu.registers.hl(), addr + 0x100 + value as u16);
+            assert_eq!(cpu.registers.hl(), addr + value as u16);
             assert!(!cpu.registers.f.z);
             assert!(!cpu.registers.f.n);
             assert!(!cpu.registers.f.h);
