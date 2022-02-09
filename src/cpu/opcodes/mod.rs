@@ -5,6 +5,7 @@ mod dec;
 mod inc;
 mod ld;
 mod ldh;
+mod logic;
 mod sbc;
 mod sub;
 
@@ -65,7 +66,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC H"        , inc::h,               1, 1),
     OpCode("DEC H"        , dec::h,               1, 1),
     OpCode("LD H, d8"     , ld::h::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("DAA"          , logic::daa,           1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("ADD HL, HL"   , add::hl::hl,          1, 2),
     OpCode("LD A, (HL+)"  , ld::a::hl_ind_add,    1, 2),
@@ -73,7 +74,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC L"        , inc::l,               1, 1),
     OpCode("DEC L"        , dec::l,               1, 1),
     OpCode("LD L, d8"     , ld::l::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CPL"          , logic::cpl,           1, 1),
 
     // 0x3_
     OpCode("UDF"          , undefined,            1, 1),
@@ -83,7 +84,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC (HL)"     , inc::hl_ind,          1, 3),
     OpCode("DEC (HL)"     , dec::hl_ind,          1, 3),
     OpCode("LD (HL), d8"  , ld::hl_ind::imm,      2, 3),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("SCF"          , logic::scf,           1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("ADD HL, SP"   , add::hl::sp,          1, 2),
     OpCode("LD A, (HL-)"  , ld::a::hl_ind_sub,    1, 2),
@@ -91,7 +92,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC A"        , inc::a,               1, 1),
     OpCode("DEC A"        , dec::a,               1, 1),
     OpCode("LD A, d8"     , ld::a::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CCF"          , logic::ccf,           1, 1),
 
     // 0x4_
     OpCode("LD B, B"      , ld::b::b,             1, 1),
@@ -202,40 +203,40 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("SBC A, A"     , sbc::a,               1, 1),
 
     // 0xA_
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("AND A, B"     , logic::and::b,        1, 1),
+    OpCode("AND A, C"     , logic::and::c,        1, 1),
+    OpCode("AND A, D"     , logic::and::d,        1, 1),
+    OpCode("AND A, E"     , logic::and::e,        1, 1),
+    OpCode("AND A, H"     , logic::and::h,        1, 1),
+    OpCode("AND A, L"     , logic::and::l,        1, 1),
+    OpCode("AND A, (HL)"  , logic::and::hl_ind,   1, 2),
+    OpCode("AND A, A"     , logic::and::a,        1, 1),
+    OpCode("XOR A, B"     , logic::xor::b,        1, 1),
+    OpCode("XOR A, C"     , logic::xor::c,        1, 1),
+    OpCode("XOR A, D"     , logic::xor::d,        1, 1),
+    OpCode("XOR A, E"     , logic::xor::e,        1, 1),
+    OpCode("XOR A, H"     , logic::xor::h,        1, 1),
+    OpCode("XOR A, L"     , logic::xor::l,        1, 1),
+    OpCode("XOR A, (HL)"  , logic::xor::hl_ind,   1, 2),
+    OpCode("XOR A, A"     , logic::xor::a,        1, 1),
 
     // 0xB_
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("OR A, B"      , logic::or::b,         1, 1),
+    OpCode("OR A, C"      , logic::or::c,         1, 1),
+    OpCode("OR A, D"      , logic::or::d,         1, 1),
+    OpCode("OR A, E"      , logic::or::e,         1, 1),
+    OpCode("OR A, H"      , logic::or::h,         1, 1),
+    OpCode("OR A, L"      , logic::or::l,         1, 1),
+    OpCode("OR A, (HL)"   , logic::or::hl_ind,    1, 2),
+    OpCode("OR A, A"      , logic::or::a,         1, 1),
+    OpCode("CP A, B"      , logic::cp::b,         1, 1),
+    OpCode("CP A, C"      , logic::cp::c,         1, 1),
+    OpCode("CP A, D"      , logic::cp::d,         1, 1),
+    OpCode("CP A, E"      , logic::cp::e,         1, 1),
+    OpCode("CP A, H"      , logic::cp::h,         1, 1),
+    OpCode("CP A, L"      , logic::cp::l,         1, 1),
+    OpCode("CP A, (HL)"   , logic::cp::hl_ind,    1, 2),
+    OpCode("CP A, A"      , logic::cp::a,         1, 1),
 
     // 0xC_
     OpCode("UDF"          , undefined,            1, 1),
@@ -280,7 +281,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("AND A, d8"    , logic::and::imm,      2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("ADD SP, r8"   , add::sp::r8,          2, 4),
     OpCode("UDF"          , undefined,            1, 1),
@@ -288,7 +289,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("XOR A, d8"    , logic::xor::imm,      2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0xF_
@@ -298,7 +299,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("OR A, d8"     , logic::or::imm,       2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("LD HL, SP+r8" , ld::hl::sp_add_reg,   2, 3),
     OpCode("LD SP, HL"    , ld::sp::hl,           1, 2),
@@ -306,7 +307,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CP A, d8"     , logic::cp::imm,       2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 ];
 
