@@ -7,6 +7,7 @@ mod ld;
 mod ldh;
 mod logic;
 mod sbc;
+mod stack;
 mod sub;
 
 pub struct OpCode<'a>(
@@ -240,11 +241,11 @@ pub const OPCODES: [OpCode; 256] = [
 
     // 0xC_
     OpCode("UDF"          , undefined,            1, 1),
+    OpCode("POP BC"       , stack::pop::bc,       1, 3),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("PUSH BC"      , stack::push::bc,      1, 4),
     OpCode("ADD A, d8"    , add::a::imm,          2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -258,11 +259,11 @@ pub const OPCODES: [OpCode; 256] = [
 
     // 0xD_
     OpCode("UDF"          , undefined,            1, 1),
+    OpCode("POP DE"       , stack::pop::de,       1, 3),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("PUSH DE"      , stack::push::de,      1, 4),
     OpCode("SUB A, d8"    , sub::imm,             2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -276,11 +277,11 @@ pub const OPCODES: [OpCode; 256] = [
 
     // 0xE_
     OpCode("LDH (a8), A"  , ldh::addr::a,         2, 3),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("POP HL"       , stack::pop::hl,       1, 3),
     OpCode("LD (C), A"    , ld::c_ind::a,         1, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("PUSH HL"      , stack::push::hl,      1, 4),
     OpCode("AND A, d8"    , logic::and::imm,      2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("ADD SP, r8"   , add::sp::r8,          2, 4),
@@ -294,11 +295,11 @@ pub const OPCODES: [OpCode; 256] = [
 
     // 0xF_
     OpCode("LDH A, (a8)"  , ldh::a::addr,         2, 3),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("POP AF"       , stack::pop::af,       1, 3),
     OpCode("LD A, (C)"    , ld::a::c_ind,         1, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("PUSH AF"      , stack::push::af,      1, 4),
     OpCode("OR A, d8"     , logic::or::imm,       2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("LD HL, SP+r8" , ld::hl::sp_add_reg,   2, 3),

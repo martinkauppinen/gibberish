@@ -99,7 +99,6 @@ struct Registers {
 }
 
 impl Registers {
-    #[allow(dead_code)]
     pub fn af(&self) -> u16 {
         (self.a as u16) << 8 | self.f.value() as u16
     }
@@ -116,7 +115,6 @@ impl Registers {
         (self.h as u16) << 8 | self.l as u16
     }
 
-    #[allow(dead_code)]
     pub fn put_af(&mut self, word: u16) {
         self.a = (word >> 8) as u8;
         self.f.set((word & 0xff) as u8);
