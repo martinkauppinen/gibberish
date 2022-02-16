@@ -4,6 +4,7 @@ mod add;
 mod dec;
 mod inc;
 mod jp;
+mod jr;
 mod ld;
 mod ldh;
 mod logic;
@@ -69,7 +70,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC D"        , dec::d,               1, 1),
     OpCode("LD D, d8"     , ld::d::imm,           2, 2),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JR r8"        , jr::r8,               2, 3),
     OpCode("ADD HL, DE"   , add::hl::de,          1, 2),
     OpCode("LD A, (DE)"   , ld::a::de_ind,        1, 2),
     OpCode("DEC DE"       , dec::de,              1, 2),
@@ -79,7 +80,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
 
     // 0x2_
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JR NZ, r8"    , jr::nz,               2, 2), // 3 if branch taken
     OpCode("LD HL, d16"   , ld::hl::imm,          3, 3),
     OpCode("LD (HL+), A"  , ld::hl_ind::add::a,   1, 2),
     OpCode("INC HL"       , inc::hl,              1, 2),
@@ -87,7 +88,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC H"        , dec::h,               1, 1),
     OpCode("LD H, d8"     , ld::h::imm,           2, 2),
     OpCode("DAA"          , logic::daa,           1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JR Z, r8"     , jr::z,                2, 2), // 3 if branch taken
     OpCode("ADD HL, HL"   , add::hl::hl,          1, 2),
     OpCode("LD A, (HL+)"  , ld::a::hl_ind_add,    1, 2),
     OpCode("DEC HL"       , dec::hl,              1, 2),
@@ -97,7 +98,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("CPL"          , logic::cpl,           1, 1),
 
     // 0x3_
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JR NC, r8"    , jr::nc,               2, 2), // 3 if branch taken
     OpCode("LD SP, d16"   , ld::sp::imm,          3, 3),
     OpCode("LD (HL-), A"  , ld::hl_ind::sub::a,   1, 2),
     OpCode("INC SP"       , inc::sp,              1, 2),
@@ -105,7 +106,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("DEC (HL)"     , dec::hl_ind,          1, 3),
     OpCode("LD (HL), d8"  , ld::hl_ind::imm,      2, 3),
     OpCode("SCF"          , logic::scf,           1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JR C, r8"     , jr::c,                2, 2), // 3 if branch taken
     OpCode("ADD HL, SP"   , add::hl::sp,          1, 2),
     OpCode("LD A, (HL-)"  , ld::a::hl_ind_sub,    1, 2),
     OpCode("DEC SP"       , dec::sp,              1, 2),
