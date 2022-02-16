@@ -162,7 +162,7 @@ mod test {
                     fn imm() {
                         let mut cpu = crate::cpu::Cpu::reset();
                         cpu.registers.a = 0xAA;
-                        cpu.write_byte(0x55, cpu.registers.pc + 1);
+                        cpu.current_argument = Some(0x55u8.into());
                         super::super::$operation::imm(&mut cpu);
                         assert_eq!(cpu.registers.a, 0xAA $op_symbol 0x55);
                     }
@@ -343,7 +343,7 @@ mod test {
                         fn equality() {
                             let mut cpu = crate::cpu::Cpu::reset();
                             cpu.registers.a = 0xAB;
-                            cpu.write_byte(cpu.registers.a, cpu.registers.pc + 1);
+                            cpu.current_argument = Some(cpu.registers.a.into());
                             super::super::super::cp::imm(&mut cpu);
                             assert!(cpu.registers.f.z);
                             assert!(cpu.registers.f.n);
@@ -355,7 +355,7 @@ mod test {
                         fn a_smaller() {
                             let mut cpu = crate::cpu::Cpu::reset();
                             cpu.registers.a = 0xAB;
-                            cpu.write_byte(0xAC, cpu.registers.pc + 1);
+                            cpu.current_argument = Some(0xACu8.into());
                             super::super::super::cp::imm(&mut cpu);
                             assert!(!cpu.registers.f.z);
                             assert!(cpu.registers.f.n);
@@ -367,7 +367,7 @@ mod test {
                         fn a_larger() {
                             let mut cpu = crate::cpu::Cpu::reset();
                             cpu.registers.a = 0xAB;
-                            cpu.write_byte(0xAA, cpu.registers.pc + 1);
+                            cpu.current_argument = Some(0xAAu8.into());
                             super::super::super::cp::imm(&mut cpu);
                             assert!(!cpu.registers.f.z);
                             assert!(cpu.registers.f.n);
