@@ -21,9 +21,9 @@ mod test {
     #[test]
     fn a_addr() {
         let value = 0xAB;
-        let offset = 0xBA;
+        let offset: u8 = 0xBA;
         let mut cpu = crate::cpu::Cpu::reset();
-        cpu.write_byte(offset, cpu.registers.pc + 1);
+        cpu.current_argument = Some(offset.into());
         cpu.write_byte(value, 0xFF00 + offset as u16);
         super::a::addr(&mut cpu);
         assert_eq!(cpu.registers.a, value);
@@ -32,9 +32,9 @@ mod test {
     #[test]
     fn addr_a() {
         let value = 0xAB;
-        let offset = 0xBA;
+        let offset: u8 = 0xBA;
         let mut cpu = crate::cpu::Cpu::reset();
-        cpu.write_byte(offset, cpu.registers.pc + 1);
+        cpu.current_argument = Some(offset.into());
         cpu.registers.a = value;
         super::addr::a(&mut cpu);
         assert_eq!(cpu.read_byte(0xFF00 + offset as u16), value);
