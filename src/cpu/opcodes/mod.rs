@@ -8,6 +8,7 @@ mod jr;
 mod ld;
 mod ldh;
 mod logic;
+mod rotate;
 mod sbc;
 mod stack;
 mod sub;
@@ -51,7 +52,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC B"        , inc::b,               1, 1),
     OpCode("DEC B"        , dec::b,               1, 1),
     OpCode("LD B, d8"     , ld::b::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RLCA"         , rotate::rlca,         1, 1),
     OpCode("LD (a16, SP)" , ld::addr::sp,         3, 5),
     OpCode("ADD HL, BC"   , add::hl::bc,          1, 2),
     OpCode("LD A, (BC)"   , ld::a::bc_ind,        1, 2),
@@ -59,7 +60,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC C"        , inc::c,               1, 1),
     OpCode("DEC C"        , dec::c,               1, 1),
     OpCode("LD C, d8"     , ld::c::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RRCA"         , rotate::rrca,         1, 1),
 
     // 0x1_
     OpCode("UDF"          , undefined,            1, 1),
@@ -69,7 +70,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC D"        , inc::d,               1, 1),
     OpCode("DEC D"        , dec::d,               1, 1),
     OpCode("LD D, d8"     , ld::d::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RLA"          , rotate::rla,          1, 1),
     OpCode("JR r8"        , jr::r8,               2, 3),
     OpCode("ADD HL, DE"   , add::hl::de,          1, 2),
     OpCode("LD A, (DE)"   , ld::a::de_ind,        1, 2),
@@ -77,7 +78,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("INC E"        , inc::e,               1, 1),
     OpCode("DEC E"        , dec::e,               1, 1),
     OpCode("LD E, d8"     , ld::e::imm,           2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RRA"          , rotate::rra,          1, 1),
 
     // 0x2_
     OpCode("JR NZ, r8"    , jr::nz,               2, 2), // 3 if branch taken
