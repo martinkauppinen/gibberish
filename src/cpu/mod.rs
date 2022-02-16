@@ -3,10 +3,19 @@ use crate::memory::map::MemoryMap;
 use opcodes::OpCode;
 
 #[derive(Debug, Clone)]
+enum Argument {
+    Byte(u8),
+    Word(u16),
+}
+
+#[derive(Debug, Clone)]
 pub struct Cpu {
     registers: Registers,
     machine_cycles: u8,
     memory: MemoryMap,
+    current_instruction: u8,
+    current_argument: Option<Argument>,
+    branch_taken: bool,
 }
 
 impl Cpu {
@@ -31,26 +40,61 @@ impl Cpu {
             },
             machine_cycles: 0,
             memory: MemoryMap::new(),
+            current_instruction: 0,
+            current_argument: None,
+            branch_taken: false,
         }
     }
 
     #[allow(dead_code)]
     /// Step through one instrucion
     pub fn step(&mut self) {
+        self.current_instruction = self.read_byte(self.registers.pc);
         let OpCode(_mnemonic, func, size, cycles) =
-            opcodes::OPCODES[self.read_byte(self.registers.pc) as usize];
+            opcodes::OPCODES[self.current_instruction as usize];
+        match size {
+            2 => {
+                self.current_argument = Some(Argument::Byte(self.read_byte(self.registers.pc + 1)))
+            }
+            3 => {
+                self.current_argument = Some(Argument::Word(self.read_word(self.registers.pc + 1)))
+            }
+            _ => self.current_argument = None,
+        }
+        self.machine_cycles = 0;
+        self.branch_taken = false;
         func(self);
-        self.registers.pc = self.registers.pc.wrapping_add(size as u16);
-        self.machine_cycles = cycles;
+
+        if !self.branch_taken {
+            self.registers.pc = self.registers.pc.wrapping_add(size as u16);
+        }
+
+        self.machine_cycles += cycles;
     }
 
     /// Step through specific opcode
     pub fn step_op(&mut self, op: usize) {
+        self.current_instruction = op as u8;
         let OpCode(mnemonic, func, size, cycles) = opcodes::OPCODES[op];
+        match size {
+            2 => {
+                self.current_argument = Some(Argument::Byte(self.read_byte(self.registers.pc + 1)))
+            }
+            3 => {
+                self.current_argument = Some(Argument::Word(self.read_word(self.registers.pc + 1)))
+            }
+            _ => self.current_argument = None,
+        }
         println!("{:#04x}: {}", op, mnemonic);
+        self.machine_cycles = 0;
+        self.branch_taken = false;
         func(self);
-        self.registers.pc = self.registers.pc.wrapping_add(size as u16);
-        self.machine_cycles = cycles;
+
+        if !self.branch_taken {
+            self.registers.pc = self.registers.pc.wrapping_add(size as u16);
+        }
+
+        self.machine_cycles += cycles;
     }
 
     /// Store a byte at a memory address

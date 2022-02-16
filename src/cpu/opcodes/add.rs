@@ -27,6 +27,7 @@ macro_rules! add {
 }
 
 pub mod a {
+
     add!(a; b);
     add!(a; c);
     add!(a; d);

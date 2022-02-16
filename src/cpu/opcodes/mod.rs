@@ -3,6 +3,7 @@ mod adc;
 mod add;
 mod dec;
 mod inc;
+mod jp;
 mod ld;
 mod ldh;
 mod logic;
@@ -242,15 +243,15 @@ pub const OPCODES: [OpCode; 256] = [
     // 0xC_
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("POP BC"       , stack::pop::bc,       1, 3),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JP NZ, a16"   , jp::nz,               3, 3), // 4 if branch taken
+    OpCode("JP a16"       , jp::a16,              3, 4),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("PUSH BC"      , stack::push::bc,      1, 4),
     OpCode("ADD A, d8"    , add::a::imm,          2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JP Z, a16"    , jp::z,                3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -260,7 +261,7 @@ pub const OPCODES: [OpCode; 256] = [
     // 0xD_
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("POP DE"       , stack::pop::de,       1, 3),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JP NC, a16"   , jp::nc,               3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("PUSH DE"      , stack::push::de,      1, 4),
@@ -268,7 +269,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JP C, a16"    , jp::c,                3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
@@ -285,7 +286,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("AND A, d8"    , logic::and::imm,      2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("ADD SP, r8"   , add::sp::r8,          2, 4),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("JP (HL)"      , jp::hl_ind,           1, 1),
     OpCode("LD (a16), A"  , ld::addr::a,          3, 4),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
