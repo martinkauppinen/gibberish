@@ -61,7 +61,7 @@ mod tests {
     #[test]
     fn test_a16() {
         let mut cpu = crate::cpu::Cpu::reset();
-        cpu.write_word(0xbeef, cpu.registers.pc + 1);
+        cpu.current_argument = Some(0xbeefu16.into());
         super::a16(&mut cpu);
         assert_eq!(cpu.registers.pc, 0xbeef);
     }
