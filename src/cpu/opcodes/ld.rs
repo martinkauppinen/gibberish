@@ -65,10 +65,10 @@ pub mod a {
         cpu.registers.put_hl(cpu.registers.hl().wrapping_sub(1));
     }
 
-    /// Load A with value at memory address 0xFF00 + immediate argument
+    /// Load A with value at memory pointed to by immediate argument
     /// - - - -
     pub fn addr(cpu: &mut crate::cpu::Cpu) {
-        let addr = 0xFF00 + cpu.get_byte_argument() as u16;
+        let addr = cpu.get_word_argument() as u16;
         cpu.registers.a = cpu.read_byte(addr);
     }
 
@@ -184,7 +184,7 @@ pub mod hl {
 
 pub mod addr {
     pub fn a(cpu: &mut crate::cpu::Cpu) {
-        let addr = 0xFF00 + cpu.get_byte_argument() as u16;
+        let addr = cpu.get_word_argument();
         cpu.write_byte(cpu.registers.a, addr);
     }
 
@@ -226,7 +226,7 @@ mod test {
                 fn imm() {
                     let value = 0xAB;
                     let mut cpu = Cpu::reset();
-                    cpu.write_byte(value, cpu.registers.pc + 1);
+                    cpu.current_argument = Some(value.into());
                     super::super::$dst::imm(&mut cpu);
                     assert_eq!(cpu.registers.$dst, value);
                 }
@@ -286,7 +286,7 @@ mod test {
             fn imm() {
                 let value = 0xAB;
                 let mut cpu = crate::cpu::Cpu::reset();
-                cpu.write_byte(value, cpu.registers.pc + 1);
+                cpu.current_argument = Some(value.into());
                 cpu.registers.$load_func(0x100);
                 super::super::$mod_name::imm(&mut cpu);
                 assert_eq!(cpu.read_byte(cpu.registers.$pair()), value);
@@ -401,10 +401,10 @@ mod test {
         #[test]
         fn addr() {
             let value = 0xAB;
-            let offset = 0x23;
+            let offset: u16 = 0x23;
             let mut cpu = crate::cpu::Cpu::reset();
-            cpu.write_word(offset, cpu.registers.pc + 1);
-            cpu.write_byte(value, 0xFF00 + offset as u16);
+            cpu.current_argument = Some(offset.into());
+            cpu.write_byte(value, offset);
             super::super::a::addr(&mut cpu);
             assert_eq!(cpu.registers.a, value);
         }
@@ -416,7 +416,7 @@ mod test {
             fn imm() {
                 let value = 0xBEEF;
                 let mut cpu = crate::cpu::Cpu::reset();
-                cpu.write_word(value, cpu.registers.pc + 1);
+                cpu.current_argument = Some(value.into());
                 super::super::$pair::imm(&mut cpu);
                 assert_eq!(cpu.registers.$pair(), value);
             }
@@ -436,11 +436,11 @@ mod test {
 
         #[test]
         fn sp_add_reg() {
-            let value = 0xFF;
+            let value: u8 = 0xFF;
             let addr = 0xBEEF;
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.sp = addr;
-            cpu.write_byte(value, cpu.registers.pc + 1);
+            cpu.current_argument = Some(value.into());
             super::super::hl::sp_add_reg(&mut cpu);
             assert_eq!(cpu.registers.hl(), 0xBEEE);
             assert!(!cpu.registers.f.z);
@@ -455,12 +455,12 @@ mod test {
         #[test]
         fn a() {
             let value = 0xAB;
-            let offset = 0x23;
+            let offset: u16 = 0x23;
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.a = value;
-            cpu.write_byte(offset, cpu.registers.pc + 1);
+            cpu.current_argument = Some(offset.into());
             super::super::addr::a(&mut cpu);
-            assert_eq!(cpu.read_byte(0xFF00 + offset as u16), value);
+            assert_eq!(cpu.read_byte(offset), value);
         }
 
         #[test]
@@ -469,7 +469,7 @@ mod test {
             let addr = 0x123;
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.sp = value;
-            cpu.write_word(addr, cpu.registers.pc + 1);
+            cpu.current_argument = Some(addr.into());
             super::super::addr::sp(&mut cpu);
             assert_eq!(cpu.read_word(addr), value);
         }
