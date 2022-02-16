@@ -127,7 +127,7 @@ mod test {
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.a = 0x0F;
             cpu.registers.f.c = true;
-            cpu.write_byte(0x01, cpu.registers.pc + 1);
+            cpu.current_argument = Some(1u8.into());
             super::super::a::imm(&mut cpu);
             assert_eq!(cpu.registers.a, 0x0F + 0x01 + 1);
             assert!(!cpu.registers.f.z);

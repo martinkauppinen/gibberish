@@ -138,7 +138,7 @@ mod test {
         fn imm() {
             let mut cpu = crate::cpu::Cpu::reset();
             cpu.registers.a = 0x0F;
-            cpu.write_byte(0x01, cpu.registers.pc + 1);
+            cpu.current_argument = Some(1u8.into());
             super::super::a::imm(&mut cpu);
             assert_eq!(cpu.registers.a, 0x0F + 0x01);
             assert!(!cpu.registers.f.z);
@@ -195,9 +195,9 @@ mod test {
         #[test]
         fn r8() {
             let mut cpu = crate::cpu::Cpu::reset();
-            let value = 0xFF;
+            let value: u8 = 0xFF;
             cpu.registers.sp = 0xBEEF;
-            cpu.write_byte(value, cpu.registers.pc + 1);
+            cpu.current_argument = Some(value.into());
             super::super::sp::r8(&mut cpu);
             assert_eq!(cpu.registers.sp, 0xBEEE);
             assert!(!cpu.registers.f.z);

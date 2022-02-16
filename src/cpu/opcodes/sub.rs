@@ -97,7 +97,7 @@ mod test {
 
         fn setup(minuend: u8, subtrahend: u8, cpu: &mut crate::cpu::Cpu) {
             cpu.registers.a = minuend;
-            cpu.write_byte(subtrahend, cpu.registers.pc + 1);
+            cpu.current_argument = Some(subtrahend.into());
             super::super::imm(cpu);
         }
 
