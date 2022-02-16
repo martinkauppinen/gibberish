@@ -1,12 +1,6 @@
 mod opcodes;
 use crate::memory::map::MemoryMap;
-use opcodes::OpCode;
-
-#[derive(Debug, Clone)]
-enum Argument {
-    Byte(u8),
-    Word(u16),
-}
+use opcodes::{Argument, OpCode};
 
 #[derive(Debug, Clone)]
 pub struct Cpu {
@@ -119,12 +113,20 @@ impl Cpu {
 
     /// Get byte argument of instruction
     pub fn get_byte_argument(&mut self) -> u8 {
-        self.read_byte(self.registers.pc + 1)
+        if let Some(Argument::Byte(arg)) = self.current_argument {
+            arg
+        } else {
+            panic!("Expected byte argument, found {:?}", self.current_argument);
+        }
     }
 
     /// Get word argument of instruction
     pub fn get_word_argument(&mut self) -> u16 {
-        self.read_word(self.registers.pc + 1)
+        if let Some(Argument::Word(arg)) = self.current_argument {
+            arg
+        } else {
+            panic!("Expected word argument, found {:?}", self.current_argument);
+        }
     }
 }
 

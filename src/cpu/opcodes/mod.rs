@@ -11,6 +11,24 @@ mod sbc;
 mod stack;
 mod sub;
 
+#[derive(Debug, Clone)]
+pub enum Argument {
+    Byte(u8),
+    Word(u16),
+}
+
+impl From<u8> for Argument {
+    fn from(byte: u8) -> Self {
+        Argument::Byte(byte)
+    }
+}
+
+impl From<u16> for Argument {
+    fn from(word: u16) -> Self {
+        Argument::Word(word)
+    }
+}
+
 pub struct OpCode<'a>(
     /// Mnemonic
     pub &'a str,
