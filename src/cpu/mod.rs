@@ -66,6 +66,32 @@ impl Cpu {
         self.machine_cycles += cycles;
     }
 
+    /// Print method for debugging
+    pub fn print_status(&self) {
+        let current_instruction = self.read_byte(self.registers.pc);
+        let OpCode(mnemonic, _, size, _) = opcodes::OPCODES[current_instruction as usize];
+
+        let argument: Option<Argument>;
+        match size {
+            2 => argument = Some(Argument::Byte(self.read_byte(self.registers.pc + 1))),
+            3 => argument = Some(Argument::Word(self.read_word(self.registers.pc + 1))),
+            _ => argument = None,
+        }
+
+        print!("A: {:02x} | ", self.registers.a);
+        print!("B: {:02x} | ", self.registers.b);
+        print!("C: {:02x} | ", self.registers.c);
+        print!("D: {:02x} | ", self.registers.d);
+        print!("E: {:02x} | ", self.registers.e);
+        print!("F: {:08b} | ", self.registers.f.value());
+        print!("H: {:02x} | ", self.registers.h);
+        print!("L: {:02x} | ", self.registers.l);
+        print!("SP: {:04x} | ", self.registers.sp);
+        println!("PC: {:04x}", self.registers.pc);
+        println!("Instruction at PC: {mnemonic}");
+        println!("Argument: {:x?}", argument);
+    }
+
     /// Step through specific opcode
     pub fn step_op(&mut self, op: usize) {
         self.current_instruction = op as u8;
