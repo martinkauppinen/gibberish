@@ -3,7 +3,7 @@
 pub fn a16(cpu: &mut crate::cpu::Cpu) {
     let addr = cpu.get_word_argument();
     let pc = cpu.registers.pc;
-    cpu.push(pc);
+    cpu.push(pc + 3);
     cpu.registers.pc = addr;
     cpu.branch_taken = true;
 }
@@ -17,7 +17,7 @@ fn call(cpu: &mut crate::cpu::Cpu, condition: bool) {
 
     let addr = cpu.get_word_argument();
     let pc = cpu.registers.pc;
-    cpu.push(pc);
+    cpu.push(pc + 3);
     cpu.registers.pc = addr;
     cpu.machine_cycles = 3; // Extra cycles
     cpu.branch_taken = true;
