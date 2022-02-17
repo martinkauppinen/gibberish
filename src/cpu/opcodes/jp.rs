@@ -6,48 +6,41 @@ pub fn a16(cpu: &mut crate::cpu::Cpu) {
     cpu.branch_taken = true;
 }
 
+/// Jump to address on condition
+/// - - -_-
+fn jump(cpu: &mut crate::cpu::Cpu, condition: bool) {
+    if !condition {
+        return;
+    }
+
+    let addr = cpu.get_word_argument();
+    cpu.registers.pc = addr;
+    cpu.machine_cycles = 1; // Extra cycle
+    cpu.branch_taken = true;
+}
+
 /// Jump to address if Z is set
 /// - - - -
 pub fn z(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if cpu.registers.f.z {
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jump(cpu, cpu.registers.f.z);
 }
 
 /// Jump to address if Z is not set
 /// - - - -
 pub fn nz(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if !cpu.registers.f.z {
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jump(cpu, !cpu.registers.f.z);
 }
 
 /// Jump to address if C is set
 /// - - - -
 pub fn c(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if cpu.registers.f.c {
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jump(cpu, cpu.registers.f.c);
 }
 
 /// Jump to address if C is not set
 /// - - - -
 pub fn nc(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if !cpu.registers.f.c {
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jump(cpu, !cpu.registers.f.c);
 }
 
 /// Jump to address in HL unconditionally

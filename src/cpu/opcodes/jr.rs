@@ -8,48 +8,41 @@ pub fn r8(cpu: &mut crate::cpu::Cpu) {
     cpu.branch_taken = true;
 }
 
+/// Add sign extended immediate byte to PC on condition
+/// - - -_-
+fn jr(cpu: &mut crate::cpu::Cpu, condition: bool) {
+    if !condition {
+        return;
+    }
+
+    let addr = sign_extend(cpu.get_byte_argument());
+    cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
+    cpu.machine_cycles = 1; // Extra cycle
+    cpu.branch_taken = true;
+}
+
 /// Add sign extended immediate byte to PC if Z is set
 /// - - - -
 pub fn z(cpu: &mut crate::cpu::Cpu) {
-    let addr = sign_extend(cpu.get_byte_argument());
-    if cpu.registers.f.z {
-        cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jr(cpu, cpu.registers.f.z);
 }
 
 /// Add sign extended immediate byte to PC if Z is not set
 /// - - - -
 pub fn nz(cpu: &mut crate::cpu::Cpu) {
-    let addr = sign_extend(cpu.get_byte_argument());
-    if !cpu.registers.f.z {
-        cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jr(cpu, !cpu.registers.f.z);
 }
 
 /// Add sign extended immediate byte to PC if C is set
 /// - - - -
 pub fn c(cpu: &mut crate::cpu::Cpu) {
-    let addr = sign_extend(cpu.get_byte_argument());
-    if cpu.registers.f.c {
-        cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jr(cpu, cpu.registers.f.c);
 }
 
 /// Add sign extended immediate byte to PC if C is not set
 /// - - - -
 pub fn nc(cpu: &mut crate::cpu::Cpu) {
-    let addr = sign_extend(cpu.get_byte_argument());
-    if !cpu.registers.f.c {
-        cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
-        cpu.machine_cycles = 1; // Extra cycle
-        cpu.branch_taken = true;
-    }
+    jr(cpu, !cpu.registers.f.c);
 }
 
 #[cfg(test)]

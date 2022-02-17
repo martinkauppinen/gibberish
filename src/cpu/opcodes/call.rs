@@ -8,56 +8,43 @@ pub fn a16(cpu: &mut crate::cpu::Cpu) {
     cpu.branch_taken = true;
 }
 
+/// Call subroutine on condition
+/// - - -_-
+fn call(cpu: &mut crate::cpu::Cpu, condition: bool) {
+    if !condition {
+        return;
+    }
+
+    let addr = cpu.get_word_argument();
+    let pc = cpu.registers.pc;
+    cpu.push(pc);
+    cpu.registers.pc = addr;
+    cpu.machine_cycles = 3; // Extra cycles
+    cpu.branch_taken = true;
+}
+
 /// Call subroutine if Z is set
 /// - - - -
 pub fn z(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if cpu.registers.f.z {
-        let pc = cpu.registers.pc;
-        cpu.push(pc);
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 3; // Extra cycles
-        cpu.branch_taken = true;
-    }
+    call(cpu, cpu.registers.f.z);
 }
 
 /// Call subroutine if Z is not set
 /// - - - -
 pub fn nz(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if !cpu.registers.f.z {
-        let pc = cpu.registers.pc;
-        cpu.push(pc);
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 3; // Extra cycles
-        cpu.branch_taken = true;
-    }
+    call(cpu, !cpu.registers.f.z);
 }
 
 /// Call subroutine if C is set
 /// - - - -
 pub fn c(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if cpu.registers.f.c {
-        let pc = cpu.registers.pc;
-        cpu.push(pc);
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 3; // Extra cycles
-        cpu.branch_taken = true;
-    }
+    call(cpu, cpu.registers.f.c);
 }
 
 /// Call subroutine if C is not set
 /// - - - -
 pub fn nc(cpu: &mut crate::cpu::Cpu) {
-    let addr = cpu.get_word_argument();
-    if !cpu.registers.f.c {
-        let pc = cpu.registers.pc;
-        cpu.push(pc);
-        cpu.registers.pc = addr;
-        cpu.machine_cycles = 3; // Extra cycles
-        cpu.branch_taken = true;
-    }
+    call(cpu, !cpu.registers.f.c);
 }
 
 #[cfg(test)]
