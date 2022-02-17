@@ -92,6 +92,7 @@ impl Cpu {
         println!("Argument: {:x?}", argument);
     }
 
+    #[allow(dead_code)]
     /// Step through specific opcode
     pub fn step_op(&mut self, op: usize) {
         self.current_instruction = op as u8;
