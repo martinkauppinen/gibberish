@@ -1,11 +1,7 @@
 macro_rules! push {
     ($pair:ident) => {
         pub fn $pair(cpu: &mut crate::cpu::Cpu) {
-            let [hi, lo] = cpu.registers.$pair().to_be_bytes();
-            cpu.registers.sp = cpu.registers.sp.wrapping_sub(1);
-            cpu.write_byte(hi, cpu.registers.sp);
-            cpu.registers.sp = cpu.registers.sp.wrapping_sub(1);
-            cpu.write_byte(lo, cpu.registers.sp);
+            cpu.push(cpu.registers.$pair());
         }
     };
 }
@@ -13,12 +9,8 @@ macro_rules! push {
 macro_rules! pop {
     ($pair:ident, $load_func:ident) => {
         pub fn $pair(cpu: &mut crate::cpu::Cpu) {
-            let lo = cpu.read_byte(cpu.registers.sp);
-            cpu.registers.sp = cpu.registers.sp.wrapping_add(1);
-            let hi = cpu.read_byte(cpu.registers.sp);
-            cpu.registers.sp = cpu.registers.sp.wrapping_add(1);
-
-            cpu.registers.$load_func(u16::from_be_bytes([hi, lo]));
+            let word = cpu.pop();
+            cpu.registers.$load_func(word);
         }
     };
 }

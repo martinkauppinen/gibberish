@@ -128,6 +128,25 @@ impl Cpu {
             panic!("Expected word argument, found {:?}", self.current_argument);
         }
     }
+
+    /// Push a word to the stack
+    pub fn push(&mut self, word: u16) {
+        let [hi, lo] = word.to_be_bytes();
+        self.registers.sp = self.registers.sp.wrapping_sub(1);
+        self.write_byte(hi, self.registers.sp);
+        self.registers.sp = self.registers.sp.wrapping_sub(1);
+        self.write_byte(lo, self.registers.sp);
+    }
+
+    /// Pop a word off the stack
+    pub fn pop(&mut self) -> u16 {
+        let lo = self.read_byte(self.registers.sp);
+        self.registers.sp = self.registers.sp.wrapping_add(1);
+        let hi = self.read_byte(self.registers.sp);
+        self.registers.sp = self.registers.sp.wrapping_add(1);
+
+        u16::from_be_bytes([hi, lo])
+    }
 }
 
 #[derive(Debug, Clone)]
