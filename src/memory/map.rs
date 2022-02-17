@@ -117,5 +117,5 @@ const UNUSABLE_END: u16 = 0xFEFF;
 const IO_REGS_START: u16 = 0xFF00;
 const IO_REGS_END: u16 = 0xFF7F;
 const HRAM_START: u16 = 0xFF80;
-const HRAM_END: u16 = 0xFFEF;
+const HRAM_END: u16 = 0xFFFE;
 const INT_ENABLE_ADDR: u16 = 0xFFFF;
