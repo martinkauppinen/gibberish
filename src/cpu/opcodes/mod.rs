@@ -1,6 +1,7 @@
 use crate::cpu::Cpu;
 mod adc;
 mod add;
+mod call;
 mod dec;
 mod inc;
 mod jp;
@@ -265,7 +266,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("POP BC"       , stack::pop::bc,       1, 3),
     OpCode("JP NZ, a16"   , jp::nz,               3, 3), // 4 if branch taken
     OpCode("JP a16"       , jp::a16,              3, 4),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CALL NZ, a16" , call::nz,             3, 3), // 6 if branch taken
     OpCode("PUSH BC"      , stack::push::bc,      1, 4),
     OpCode("ADD A, d8"    , add::a::imm,          2, 2),
     OpCode("UDF"          , undefined,            1, 1),
@@ -273,8 +274,8 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("JP Z, a16"    , jp::z,                3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CALL Z, a16"  , call::z,              3, 3), // 6 if branch taken
+    OpCode("CALL a16"     , call::a16,            3, 6),
     OpCode("ADC A, d8"    , adc::a::imm,          2, 2),
     OpCode("UDF"          , undefined,            1, 1),
 
@@ -283,7 +284,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("POP DE"       , stack::pop::de,       1, 3),
     OpCode("JP NC, a16"   , jp::nc,               3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CALL NC, a16" , call::nc,             3, 3), // 6 if branch taken
     OpCode("PUSH DE"      , stack::push::de,      1, 4),
     OpCode("SUB A, d8"    , sub::imm,             2, 2),
     OpCode("UDF"          , undefined,            1, 1),
@@ -291,7 +292,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("JP C, a16"    , jp::c,                3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("CALL C, a16"  , call::c,              3, 3), // 6 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("SBC A, d8"    , sbc::imm,             2, 2),
     OpCode("UDF"          , undefined,            1, 1),
