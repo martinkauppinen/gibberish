@@ -3,6 +3,7 @@
 pub fn a16(cpu: &mut crate::cpu::Cpu) {
     let addr = cpu.get_word_argument();
     cpu.registers.pc = addr;
+    cpu.branch_taken = true;
 }
 
 /// Jump to address if Z is set
@@ -54,6 +55,7 @@ pub fn nc(cpu: &mut crate::cpu::Cpu) {
 pub fn hl_ind(cpu: &mut crate::cpu::Cpu) {
     let addr = cpu.registers.hl();
     cpu.registers.pc = addr;
+    cpu.branch_taken = true;
 }
 
 #[cfg(test)]

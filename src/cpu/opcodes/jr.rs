@@ -5,6 +5,7 @@ use super::sign_extend;
 pub fn r8(cpu: &mut crate::cpu::Cpu) {
     let addr = sign_extend(cpu.get_byte_argument());
     cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
+    cpu.branch_taken = true;
 }
 
 /// Add sign extended immediate byte to PC if Z is set
