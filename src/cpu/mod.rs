@@ -3,6 +3,20 @@ use crate::memory::map::MemoryMap;
 use opcodes::{Argument, OpCode};
 
 #[derive(Debug, Clone)]
+enum RunningMode {
+    PowerUp,
+    Stop,
+    Halt,
+    Running,
+}
+
+impl Default for RunningMode {
+    fn default() -> Self {
+        RunningMode::PowerUp
+    }
+}
+
+#[derive(Debug, Clone, Default)]
 pub struct Cpu {
     registers: Registers,
     machine_cycles: u8,
@@ -10,34 +24,66 @@ pub struct Cpu {
     current_instruction: u8,
     current_argument: Option<Argument>,
     branch_taken: bool,
+    mode: RunningMode,
 }
 
 impl Cpu {
     pub fn reset() -> Self {
-        Self {
-            registers: Registers {
-                pc: 0x100,
-                sp: 0xfffe,
-                a: 0,
-                b: 0,
-                c: 0,
-                d: 0,
-                e: 0,
-                f: FlagRegister {
-                    z: false,
-                    n: false,
-                    h: false,
-                    c: false,
-                },
-                h: 0,
-                l: 0,
-            },
-            machine_cycles: 0,
-            memory: MemoryMap::new(),
-            current_instruction: 0,
-            current_argument: None,
-            branch_taken: false,
-        }
+        let mut cpu = Self::default();
+
+        // TODO: (maybe)
+        // - Run startup ROM at 0x00 - 0xFF
+        // - Validate checksum
+
+        cpu.registers.pc = 0x100;
+        cpu.registers.a = 0x01;
+        cpu.registers.f.set(0xB0);
+        cpu.registers.put_bc(0x0013);
+        cpu.registers.put_de(0x00D8);
+        cpu.registers.put_hl(0x014D);
+        cpu.registers.sp = 0xFFFE;
+
+        // Timer registers
+        cpu.write_byte(0x00, 0xFF05); // TIMA
+        cpu.write_byte(0x00, 0xFF06); // TMA
+        cpu.write_byte(0x00, 0xFF07); // TAC
+
+        // Sound registers
+        cpu.write_byte(0x80, 0xFF10); // NR10
+        cpu.write_byte(0xBF, 0xFF11); // NR11
+        cpu.write_byte(0xF3, 0xFF12); // NR12
+        cpu.write_byte(0xBF, 0xFF14); // NR14
+        cpu.write_byte(0x3F, 0xFF16); // NR21
+        cpu.write_byte(0x00, 0xFF17); // NR22
+        cpu.write_byte(0xBF, 0xFF19); // NR24
+        cpu.write_byte(0x7F, 0xFF1A); // NR30
+        cpu.write_byte(0xFF, 0xFF1B); // NR31
+        cpu.write_byte(0x9F, 0xFF1C); // NR32
+        cpu.write_byte(0xBF, 0xFF1E); // NR33
+        cpu.write_byte(0xFF, 0xFF20); // NR41
+        cpu.write_byte(0x00, 0xFF21); // NR42
+        cpu.write_byte(0x00, 0xFF22); // NR43
+        cpu.write_byte(0xBF, 0xFF23); // NR44
+        cpu.write_byte(0x77, 0xFF24); // NR50
+        cpu.write_byte(0xF3, 0xFF25); // NR51
+        cpu.write_byte(0xF1, 0xFF26); // NR52
+
+        // Display registers
+        cpu.write_byte(0x91, 0xFF40); // LCDC
+        cpu.write_byte(0x00, 0xFF42); // SCY
+        cpu.write_byte(0x00, 0xFF43); // SCX
+        cpu.write_byte(0x00, 0xFF45); // LYC
+        cpu.write_byte(0xFC, 0xFF47); // BGP
+        cpu.write_byte(0xFF, 0xFF48); // OBP0
+        cpu.write_byte(0xFF, 0xFF49); // OBP1
+        cpu.write_byte(0x00, 0xFF4A); // WY
+        cpu.write_byte(0x00, 0xFF4B); // WX
+
+        // Interrupt enable flag
+        cpu.write_byte(0x00, 0xFFFF); // IE
+
+        cpu.mode = RunningMode::Running;
+        cpu
     }
 
     #[allow(dead_code)]
@@ -57,7 +103,14 @@ impl Cpu {
         }
         self.machine_cycles = 0;
         self.branch_taken = false;
-        func(self);
+
+        match self.mode {
+            RunningMode::Stop => todo!(),
+            RunningMode::Halt => todo!(),
+            _ => func(self),
+        }
+
+        self.machine_cycles += cycles;
 
         if !self.branch_taken {
             self.registers.pc = self.registers.pc.wrapping_add(size as u16);
@@ -176,7 +229,7 @@ impl Cpu {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct Registers {
     a: u8,
     b: u8,
@@ -228,7 +281,7 @@ impl Registers {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct FlagRegister {
     /// Zero flag
     ///

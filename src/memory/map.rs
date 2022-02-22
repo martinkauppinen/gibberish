@@ -14,6 +14,12 @@ pub struct MemoryMap {
     int_enable_reg: u8,
 }
 
+impl Default for MemoryMap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl MemoryMap {
     pub fn new() -> Self {
         Self {

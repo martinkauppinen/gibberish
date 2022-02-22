@@ -71,6 +71,7 @@ mod test {
     #[test]
     fn rla() {
         let mut cpu = crate::cpu::Cpu::reset();
+        cpu.registers.f.set(0);
         cpu.registers.a = 0b1010_1010;
         super::rla(&mut cpu);
         assert!(cpu.registers.f.c);

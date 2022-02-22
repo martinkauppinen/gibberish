@@ -206,6 +206,7 @@ mod test {
         #[test]
         fn no_adjust() {
             let mut cpu = crate::cpu::Cpu::reset();
+            cpu.registers.f.set(0);
             cpu.registers.a = 0x99;
             super::super::daa(&mut cpu);
             assert_eq!(cpu.registers.a, 0x99);
@@ -215,6 +216,7 @@ mod test {
         #[test]
         fn adjust_lo() {
             let mut cpu = crate::cpu::Cpu::reset();
+            cpu.registers.f.set(0);
             cpu.registers.a = 0x0A;
             super::super::daa(&mut cpu);
             assert_eq!(cpu.registers.a, 0x10);
@@ -224,6 +226,7 @@ mod test {
         #[test]
         fn adjust_hi() {
             let mut cpu = crate::cpu::Cpu::reset();
+            cpu.registers.f.set(0);
             cpu.registers.a = 0xA0;
             super::super::daa(&mut cpu);
             assert_eq!(cpu.registers.a, 0x00);
@@ -233,6 +236,7 @@ mod test {
         #[test]
         fn adjust_both() {
             let mut cpu = crate::cpu::Cpu::reset();
+            cpu.registers.f.set(0);
             cpu.registers.a = 0xAB;
             super::super::daa(&mut cpu);
             assert_eq!(cpu.registers.a, 0x11);

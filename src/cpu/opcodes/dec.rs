@@ -55,9 +55,7 @@ pub fn hl_ind(cpu: &mut Cpu) {
     cpu.write_byte(value_new, cpu.registers.hl());
     cpu.registers.f.h = super::half_carry_add(value_old, value_new);
 
-    if value_new == 0 {
-        cpu.registers.f.z = true;
-    }
+    cpu.registers.f.z = value_new == 0;
 }
 
 #[cfg(test)]
@@ -113,6 +111,7 @@ mod test {
                 fn simple_dec() {
                     let mut cpu = Cpu::reset();
                     cpu.registers.$reg_lo = 3;
+                    cpu.registers.$reg_hi = 0;
                     super::super::$func(&mut cpu);
                     assert_eq!(cpu.registers.$reg_lo, 2);
                     assert_eq!(cpu.registers.$reg_hi, 0);
