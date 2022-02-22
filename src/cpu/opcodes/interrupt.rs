@@ -1,22 +1,19 @@
 use crate::cpu::{Cpu, RunningMode};
-use crate::memory::map;
 
-pub fn stop(cpu: &mut crate::cpu::Cpu) {
+pub fn stop(cpu: &mut Cpu) {
     cpu.mode = RunningMode::Stop;
 }
 
-pub fn halt(cpu: &mut crate::cpu::Cpu) {
+pub fn halt(cpu: &mut Cpu) {
     cpu.mode = RunningMode::Halt;
 }
 
-pub fn ei(cpu: &mut crate::cpu::Cpu) {
+pub fn ei(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = true;
-    cpu.write_byte(1, map::INT_ENABLE_ADDR);
 }
 
-pub fn di(cpu: &mut crate::cpu::Cpu) {
+pub fn di(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = false;
-    cpu.write_byte(0, map::INT_ENABLE_ADDR);
 }
 
 #[cfg(test)]
