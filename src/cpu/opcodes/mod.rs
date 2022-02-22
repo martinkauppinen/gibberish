@@ -4,6 +4,7 @@ mod add;
 mod call;
 mod dec;
 mod inc;
+mod interrupt;
 mod jp;
 mod jr;
 mod ld;
@@ -65,7 +66,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("RRCA"         , rotate::rrca,         1, 1),
 
     // 0x1_
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("STOP"         , interrupt::stop,      2, 1),
     OpCode("LD DE, d16"   , ld::de::imm,          3, 3),
     OpCode("LD (DE), A"   , ld::de_ind::a,        1, 2),
     OpCode("INC DE"       , inc::de,              1, 2),
@@ -179,7 +180,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD (HL), E"   , ld::hl_ind::e,        1, 2),
     OpCode("LD (HL), H"   , ld::hl_ind::h,        1, 2),
     OpCode("LD (HL), L"   , ld::hl_ind::l,        1, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("HALT"         , interrupt::halt,      1, 1),
     OpCode("LD (HL), A"   , ld::hl_ind::a,        1, 2),
     OpCode("LD A, B"      , ld::a::b,             1, 1),
     OpCode("LD A, C"      , ld::a::c,             1, 1),
@@ -320,7 +321,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LDH A, (a8)"  , ldh::a::addr,         2, 3),
     OpCode("POP AF"       , stack::pop::af,       1, 3),
     OpCode("LD A, (C)"    , ld::a::c_ind,         1, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("DI"           , interrupt::di,        1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("PUSH AF"      , stack::push::af,      1, 4),
     OpCode("OR A, d8"     , logic::or::imm,       2, 2),
@@ -328,7 +329,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("LD HL, SP+r8" , ld::hl::sp_add_reg,   2, 3),
     OpCode("LD SP, HL"    , ld::sp::hl,           1, 2),
     OpCode("LD A, (a16)"  , ld::a::addr,          3, 4),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("EI"           , interrupt::ei,        1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("CP A, d8"     , logic::cp::imm,       2, 2),

@@ -11,6 +11,7 @@ fn main() {
     }
 
     let _ = args.next();
+
     let mut cpu = cpu::Cpu::reset();
     let rom = std::fs::read(args.next().unwrap()).unwrap();
 

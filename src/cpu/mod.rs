@@ -1,5 +1,8 @@
+mod interrupts;
 mod opcodes;
+
 use crate::memory::map::MemoryMap;
+use interrupts::{Interrupt, InterruptController};
 use opcodes::{Argument, OpCode};
 
 #[derive(Debug, Clone)]
@@ -24,7 +27,9 @@ pub struct Cpu {
     current_instruction: u8,
     current_argument: Option<Argument>,
     branch_taken: bool,
+    interrupt_master_enable: bool,
     mode: RunningMode,
+    interrupts: InterruptController,
 }
 
 impl Cpu {
@@ -89,6 +94,7 @@ impl Cpu {
     #[allow(dead_code)]
     /// Step through one instrucion
     pub fn step(&mut self) {
+        self.handle_interrupts();
         self.current_instruction = self.read_byte(self.registers.pc);
         let OpCode(_mnemonic, func, size, cycles) =
             opcodes::OPCODES[self.current_instruction as usize];
@@ -115,8 +121,28 @@ impl Cpu {
         if !self.branch_taken {
             self.registers.pc = self.registers.pc.wrapping_add(size as u16);
         }
+    }
 
-        self.machine_cycles += cycles;
+    /// Check for interrupts and handle them if enabled
+    fn handle_interrupts(&mut self) {
+        if !self.interrupt_master_enable {
+            return;
+        }
+
+        if let Some(interrupt) = self.interrupts.get_pending_interrupt() {
+            self.push(self.registers.pc);
+            self.interrupt_master_enable = false;
+            match interrupt {
+                Interrupt::Vblank => self.registers.pc = 0x0040,
+                Interrupt::Lcdc => self.registers.pc = 0x0048,
+                Interrupt::Timer => self.registers.pc = 0x0050,
+                Interrupt::Serial => self.registers.pc = 0x0058,
+                Interrupt::Joypad => self.registers.pc = 0x0060,
+            }
+
+            // Dispatching takes 5 machine cycles
+            self.machine_cycles = 5;
+        }
     }
 
     /// Print method for debugging

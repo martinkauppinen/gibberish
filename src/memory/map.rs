@@ -102,26 +102,26 @@ impl MemoryMap {
     }
 }
 
-const CART_START: u16 = 0x0000;
-const CART_END: u16 = 0x7FFF;
-const VRAM_START: u16 = 0x8000;
-const VRAM_END: u16 = 0x9FFF;
-const ERAM_START: u16 = 0xA000;
-const ERAM_END: u16 = 0xBFFF;
-const IRAM_START: u16 = 0xC000;
-const IRAM_END: u16 = 0xDFFF;
-const IRAM_ECHO_START: u16 = 0xE000;
-const IRAM_ECHO_END: u16 = 0xFDFF;
-const SPRITE_ATTRS_START: u16 = 0xFE00;
-const SPRITE_ATTRS_END: u16 = 0xFE9F;
+pub const CART_START: u16 = 0x0000;
+pub const CART_END: u16 = 0x7FFF;
+pub const VRAM_START: u16 = 0x8000;
+pub const VRAM_END: u16 = 0x9FFF;
+pub const ERAM_START: u16 = 0xA000;
+pub const ERAM_END: u16 = 0xBFFF;
+pub const IRAM_START: u16 = 0xC000;
+pub const IRAM_END: u16 = 0xDFFF;
+pub const IRAM_ECHO_START: u16 = 0xE000;
+pub const IRAM_ECHO_END: u16 = 0xFDFF;
+pub const SPRITE_ATTRS_START: u16 = 0xFE00;
+pub const SPRITE_ATTRS_END: u16 = 0xFE9F;
 
 #[allow(dead_code)]
-const UNUSABLE_START: u16 = 0xFEA0;
+pub const UNUSABLE_START: u16 = 0xFEA0;
 #[allow(dead_code)]
-const UNUSABLE_END: u16 = 0xFEFF;
+pub const UNUSABLE_END: u16 = 0xFEFF;
 
-const IO_REGS_START: u16 = 0xFF00;
-const IO_REGS_END: u16 = 0xFF7F;
-const HRAM_START: u16 = 0xFF80;
-const HRAM_END: u16 = 0xFFFE;
-const INT_ENABLE_ADDR: u16 = 0xFFFF;
+pub const IO_REGS_START: u16 = 0xFF00;
+pub const IO_REGS_END: u16 = 0xFF7F;
+pub const HRAM_START: u16 = 0xFF80;
+pub const HRAM_END: u16 = 0xFFFE;
+pub const INT_ENABLE_ADDR: u16 = 0xFFFF;
