@@ -1,4 +1,6 @@
 SECTION "Header", ROM0[$100]
+    jp start
+    ds $150 - @, 0 ; Header
 
 start:
     ld de, $dead ; Values to check that stack
