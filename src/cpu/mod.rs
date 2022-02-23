@@ -133,6 +133,9 @@ impl Cpu {
 
     /// Check for interrupts and handle them if enabled
     fn handle_interrupts(&mut self) {
+        self.interrupts.enable_interrupts(self.read_byte(0xFFFF));
+        self.interrupts.request_interrupts(self.read_byte(0xFF0F));
+
         if self.mode == RunningMode::Running && !self.interrupt_master_enable {
             return;
         }
@@ -153,6 +156,7 @@ impl Cpu {
         if let Some(interrupt) = self.interrupts.get_pending_interrupt() {
             self.push(self.registers.pc);
             self.interrupt_master_enable = false;
+            self.write_byte(self.read_byte(0xFF0F) & !u8::from(interrupt), 0xFF0F);
             match interrupt {
                 Interrupt::Vblank => self.registers.pc = 0x0040,
                 Interrupt::Lcdc => self.registers.pc = 0x0048,
