@@ -1,3 +1,4 @@
+#[derive(Clone, Copy)]
 pub enum Interrupt {
     Vblank,
     Lcdc,
@@ -109,10 +110,8 @@ impl InterruptController {
         // Check that an enabled interrupt was found
         highest_prio?;
 
-        // Reset interrupt flag
-        self.request = (u8::from(self.request) & !highest_prio.unwrap()).into();
-
         let interrupt = highest_prio.unwrap().into();
+        self.unrequest_interrupt(interrupt);
         Some(interrupt)
     }
 
@@ -121,9 +120,35 @@ impl InterruptController {
         self.request = (u8::from(self.request) | interrupt_number).into();
     }
 
+    pub fn unrequest_interrupt(&mut self, interrupt: Interrupt) {
+        let interrupt_number: u8 = interrupt.into();
+        self.request = (u8::from(self.request) & !interrupt_number).into();
+    }
+
+    pub fn request_interrupts(&mut self, interrupts: u8) {
+        self.request = (u8::from(self.request) | interrupts).into();
+    }
+
+    pub fn unrequest_interrupts(&mut self, interrupts: u8) {
+        self.request = (u8::from(self.request) & !interrupts).into();
+    }
+
     pub fn enable_interrupt(&mut self, interrupt: Interrupt) {
         let interrupt_number: u8 = interrupt.into();
         self.enabled = (u8::from(self.enabled) | interrupt_number).into();
+    }
+
+    pub fn disable_interrupt(&mut self, interrupt: Interrupt) {
+        let interrupt_number: u8 = interrupt.into();
+        self.enabled = (u8::from(self.enabled) & !interrupt_number).into();
+    }
+
+    pub fn enable_interrupts(&mut self, interrupts: u8) {
+        self.enabled = (u8::from(self.enabled) | interrupts).into();
+    }
+
+    pub fn disable_interrupts(&mut self, interrupts: u8) {
+        self.enabled = (u8::from(self.enabled) & !interrupts).into();
     }
 
     pub fn interrupts_pending(&self) -> bool {
