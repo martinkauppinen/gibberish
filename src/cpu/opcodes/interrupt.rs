@@ -1,9 +1,15 @@
 use crate::cpu::{Cpu, RunningMode};
 
+/// Put CPU in STOP mode
+/// Nothing other than a reset can exit STOP mode
+/// - - - -
 pub fn stop(cpu: &mut Cpu) {
     cpu.mode = RunningMode::Stop;
 }
 
+/// Put CPU in HALT mode
+/// Halts the CPU until interrupt, if they're enabled
+/// - - - -
 pub fn halt(cpu: &mut Cpu) {
     if cpu.interrupt_master_enable {
         cpu.mode = RunningMode::HaltImeSet;
@@ -14,14 +20,20 @@ pub fn halt(cpu: &mut Cpu) {
     }
 }
 
+/// Enable interrupts
+/// - - -_-
 pub fn ei(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = true;
 }
 
+/// Disable interrupts
+/// - - -_-
 pub fn di(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = false;
 }
 
+/// Return from interrupt
+/// - - - -
 pub fn reti(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = true;
     cpu.registers.pc = cpu.pop();

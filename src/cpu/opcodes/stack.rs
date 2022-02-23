@@ -1,5 +1,7 @@
 macro_rules! push {
     ($pair:ident) => {
+        /// Push register pair onto the stack
+        /// - - - -
         pub fn $pair(cpu: &mut crate::cpu::Cpu) {
             cpu.push(cpu.registers.$pair());
         }
@@ -8,6 +10,8 @@ macro_rules! push {
 
 macro_rules! pop {
     ($pair:ident, $load_func:ident) => {
+        /// Pop register pair off from the stack
+        /// - - - -
         pub fn $pair(cpu: &mut crate::cpu::Cpu) {
             let word = cpu.pop();
             cpu.registers.$load_func(word);
