@@ -28,7 +28,7 @@ pub struct Cpu {
     memory: MemoryMap,
     current_instruction: u8,
     current_argument: Option<Argument>,
-    branch_taken: bool,
+    inhibit_pc: bool,
     interrupt_master_enable: bool,
     mode: RunningMode,
     interrupts: InterruptController,
@@ -101,7 +101,7 @@ impl Cpu {
         }
 
         self.machine_cycles = 0;
-        self.branch_taken = false;
+        self.inhibit_pc = false;
 
         self.handle_interrupts();
         self.current_instruction = self.read_byte(self.registers.pc);
@@ -126,7 +126,7 @@ impl Cpu {
 
         self.machine_cycles += cycles;
 
-        if !self.branch_taken {
+        if !self.inhibit_pc {
             self.registers.pc = self.registers.pc.wrapping_add(size as u16);
         }
     }
@@ -145,7 +145,7 @@ impl Cpu {
 
         if self.mode == RunningMode::HaltBug {
             // Move out of halt mode, and trigger halt bug
-            self.branch_taken = true;
+            self.inhibit_pc = true;
             self.mode = RunningMode::Running;
             return;
         }
@@ -213,10 +213,10 @@ impl Cpu {
         }
         println!("{:#04x}: {}", op, mnemonic);
         self.machine_cycles = 0;
-        self.branch_taken = false;
+        self.inhibit_pc = false;
         func(self);
 
-        if !self.branch_taken {
+        if !self.inhibit_pc {
             self.registers.pc = self.registers.pc.wrapping_add(size as u16);
         }
 

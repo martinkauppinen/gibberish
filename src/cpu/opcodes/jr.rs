@@ -5,7 +5,7 @@ use super::sign_extend;
 pub fn r8(cpu: &mut crate::cpu::Cpu) {
     let addr = sign_extend(cpu.get_byte_argument());
     cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Add sign extended immediate byte to PC on condition
@@ -18,7 +18,7 @@ fn jr(cpu: &mut crate::cpu::Cpu, condition: bool) {
     let addr = sign_extend(cpu.get_byte_argument());
     cpu.registers.pc = cpu.registers.pc.wrapping_add(addr);
     cpu.machine_cycles = 1; // Extra cycle
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Add sign extended immediate byte to PC if Z is set

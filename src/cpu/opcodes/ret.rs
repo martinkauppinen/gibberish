@@ -2,7 +2,7 @@
 /// - - - -
 pub fn ret(cpu: &mut crate::cpu::Cpu) {
     cpu.registers.pc = cpu.pop();
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Return from subroutine on condition

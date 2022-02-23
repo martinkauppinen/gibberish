@@ -25,7 +25,7 @@ pub fn di(cpu: &mut Cpu) {
 pub fn reti(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = true;
     cpu.registers.pc = cpu.pop();
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 #[cfg(test)]

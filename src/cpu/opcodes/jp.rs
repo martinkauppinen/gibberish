@@ -3,7 +3,7 @@
 pub fn a16(cpu: &mut crate::cpu::Cpu) {
     let addr = cpu.get_word_argument();
     cpu.registers.pc = addr;
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Jump to address on condition
@@ -16,7 +16,7 @@ fn jump(cpu: &mut crate::cpu::Cpu, condition: bool) {
     let addr = cpu.get_word_argument();
     cpu.registers.pc = addr;
     cpu.machine_cycles = 1; // Extra cycle
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Jump to address if Z is set
@@ -48,7 +48,7 @@ pub fn nc(cpu: &mut crate::cpu::Cpu) {
 pub fn hl_ind(cpu: &mut crate::cpu::Cpu) {
     let addr = cpu.registers.hl();
     cpu.registers.pc = addr;
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 #[cfg(test)]

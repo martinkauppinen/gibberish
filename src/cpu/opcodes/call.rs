@@ -5,7 +5,7 @@ pub fn a16(cpu: &mut crate::cpu::Cpu) {
     let pc = cpu.registers.pc;
     cpu.push(pc + 3);
     cpu.registers.pc = addr;
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Call subroutine on condition
@@ -20,7 +20,7 @@ fn call(cpu: &mut crate::cpu::Cpu, condition: bool) {
     cpu.push(pc + 3);
     cpu.registers.pc = addr;
     cpu.machine_cycles = 3; // Extra cycles
-    cpu.branch_taken = true;
+    cpu.inhibit_pc = true;
 }
 
 /// Call subroutine if Z is set
