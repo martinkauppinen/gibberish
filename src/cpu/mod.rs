@@ -5,11 +5,13 @@ use crate::memory::map::MemoryMap;
 use interrupts::{Interrupt, InterruptController};
 use opcodes::{Argument, OpCode};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 enum RunningMode {
     PowerUp,
     Stop,
-    Halt,
+    HaltImeSet,
+    HaltImeClear,
+    HaltBug,
     Running,
 }
 
@@ -94,10 +96,19 @@ impl Cpu {
     #[allow(dead_code)]
     /// Step through one instrucion
     pub fn step(&mut self) {
+        if self.mode == RunningMode::Stop {
+            return;
+        }
+
+        self.machine_cycles = 0;
+        self.branch_taken = false;
+
         self.handle_interrupts();
         self.current_instruction = self.read_byte(self.registers.pc);
+
         let OpCode(_mnemonic, func, size, cycles) =
             opcodes::OPCODES[self.current_instruction as usize];
+
         match size {
             2 => {
                 self.current_argument = Some(Argument::Byte(self.read_byte(self.registers.pc + 1)))
@@ -107,13 +118,10 @@ impl Cpu {
             }
             _ => self.current_argument = None,
         }
-        self.machine_cycles = 0;
-        self.branch_taken = false;
 
         match self.mode {
-            RunningMode::Stop => todo!(),
-            RunningMode::Halt => todo!(),
-            _ => func(self),
+            RunningMode::Running => func(self),
+            _ => return,
         }
 
         self.machine_cycles += cycles;
@@ -125,7 +133,20 @@ impl Cpu {
 
     /// Check for interrupts and handle them if enabled
     fn handle_interrupts(&mut self) {
-        if !self.interrupt_master_enable {
+        if self.mode == RunningMode::Running && !self.interrupt_master_enable {
+            return;
+        }
+
+        if self.mode == RunningMode::HaltImeClear && self.interrupts.interrupts_requested() {
+            // Move out of halt mode
+            self.mode = RunningMode::Running;
+            return;
+        }
+
+        if self.mode == RunningMode::HaltBug {
+            // Move out of halt mode, and trigger halt bug
+            self.branch_taken = true;
+            self.mode = RunningMode::Running;
             return;
         }
 
@@ -142,6 +163,11 @@ impl Cpu {
 
             // Dispatching takes 5 machine cycles
             self.machine_cycles = 5;
+
+            // If we were in normal halt mode, move out of it
+            if self.mode == RunningMode::HaltImeSet {
+                self.mode = RunningMode::Running;
+            }
         }
     }
 

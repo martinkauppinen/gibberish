@@ -125,4 +125,12 @@ impl InterruptController {
         let interrupt_number: u8 = interrupt.into();
         self.enabled = (u8::from(self.enabled) | interrupt_number).into();
     }
+
+    pub fn interrupts_pending(&self) -> bool {
+        u8::from(self.request) & u8::from(self.enabled) != 0
+    }
+
+    pub fn interrupts_requested(&self) -> bool {
+        u8::from(self.request) != 0
+    }
 }
