@@ -1,8 +1,6 @@
 mod cpu;
 mod memory;
 
-use std::io::prelude::Read;
-
 fn main() {
     let mut args = std::env::args();
     if args.len() < 2 {
@@ -21,7 +19,6 @@ fn main() {
 
     loop {
         cpu.print_status();
-        let _ = std::io::stdin().read(&mut [0u8]).unwrap();
         cpu.step();
     }
 }

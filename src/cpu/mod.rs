@@ -187,18 +187,16 @@ impl Cpu {
             _ => argument = None,
         }
 
-        print!("A: {:02x} | ", self.registers.a);
-        print!("B: {:02x} | ", self.registers.b);
-        print!("C: {:02x} | ", self.registers.c);
-        print!("D: {:02x} | ", self.registers.d);
-        print!("E: {:02x} | ", self.registers.e);
-        print!("F: {:08b} | ", self.registers.f.value());
-        print!("H: {:02x} | ", self.registers.h);
-        print!("L: {:02x} | ", self.registers.l);
-        print!("SP: {:04x} | ", self.registers.sp);
-        println!("PC: {:04x}", self.registers.pc);
-        println!("Instruction at PC: {mnemonic}");
-        println!("Argument: {:x?}", argument);
+        print!("AF: {:04x}, ", self.registers.af());
+        print!("BC: {:04x}, ", self.registers.bc());
+        print!("DE: {:04x}, ", self.registers.de());
+        print!("HL: {:04x}, ", self.registers.hl());
+        print!("SP: {:04x}, ", self.registers.sp);
+        print!("PC: {:04x}, ", self.registers.pc);
+        print!("IMF: {}, ", self.interrupt_master_enable as u8);
+        print!("IE: {:05b}, ", self.read_byte(0xFFFF));
+        print!("IF: {:05b} | ", self.read_byte(0xFF0F));
+        println!("{mnemonic:12} {argument:x?}");
     }
 
     #[allow(dead_code)]
