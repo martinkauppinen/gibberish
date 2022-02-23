@@ -16,6 +16,12 @@ pub fn di(cpu: &mut Cpu) {
     cpu.interrupt_master_enable = false;
 }
 
+pub fn reti(cpu: &mut Cpu) {
+    cpu.interrupt_master_enable = true;
+    cpu.registers.pc = cpu.pop();
+    cpu.branch_taken = true;
+}
+
 #[cfg(test)]
 mod test {
     use crate::cpu::{interrupts::Interrupt, Cpu};
@@ -33,6 +39,9 @@ mod test {
         assert_ne!(cpu.registers.pc, 0x41);
         super::ei(&mut cpu);
         cpu.step();
+
+        // A has not been incremented, and instead the first instruction
+        // of the interrupt service handler has been executed (NOP)
         assert_ne!(cpu.registers.a, 2);
         assert_eq!(cpu.registers.pc, 0x41);
     }
@@ -54,5 +63,24 @@ mod test {
         cpu.step();
         assert_eq!(cpu.registers.a, 1);
         assert_ne!(cpu.registers.pc, 0x41);
+    }
+
+    #[test]
+    fn reti() {
+        let mut cpu = Cpu::reset();
+        cpu.registers.a = 0;
+        cpu.write_byte(0x3C, cpu.registers.pc); // INC A
+        cpu.write_byte(0x3C, cpu.registers.pc + 1);
+
+        cpu.write_byte(0xD9, 0x41); // RETI
+        cpu.interrupts.request_interrupt(Interrupt::Vblank);
+        cpu.interrupts.enable_interrupt(Interrupt::Vblank);
+        super::ei(&mut cpu);
+
+        cpu.step(); // NOP in ISR
+        assert_ne!(cpu.registers.a, 1);
+        assert_eq!(cpu.registers.pc, 0x41);
+        cpu.step(); // RETI
+        assert_eq!(cpu.registers.pc, 0x100);
     }
 }

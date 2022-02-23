@@ -291,7 +291,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("SUB A, d8"    , sub::imm,             2, 2),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("RET C"        , ret::c,               1, 2), // 5 if branch taken
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RETI"         , interrupt::reti,      1, 1),
     OpCode("JP C, a16"    , jp::c,                3, 3), // 4 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("CALL C, a16"  , call::c,              3, 3), // 6 if branch taken
