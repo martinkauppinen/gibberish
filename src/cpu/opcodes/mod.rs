@@ -12,6 +12,7 @@ mod ldh;
 mod logic;
 mod ret;
 mod rotate;
+mod rst;
 mod sbc;
 mod stack;
 mod sub;
@@ -271,7 +272,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("CALL NZ, a16" , call::nz,             3, 3), // 6 if branch taken
     OpCode("PUSH BC"      , stack::push::bc,      1, 4),
     OpCode("ADD A, d8"    , add::a::imm,          2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 0"        , rst::rst_0,           1, 1),
     OpCode("RET Z"        , ret::z,               1, 2), // 5 if branch taken
     OpCode("RET"          , ret::ret,             1, 4),
     OpCode("JP Z, a16"    , jp::z,                3, 3), // 4 if branch taken
@@ -279,7 +280,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("CALL Z, a16"  , call::z,              3, 3), // 6 if branch taken
     OpCode("CALL a16"     , call::a16,            3, 6),
     OpCode("ADC A, d8"    , adc::a::imm,          2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 1"        , rst::rst_1,           1, 1),
 
     // 0xD_
     OpCode("RET NC"       , ret::nc,              1, 2), // 5 if branch taken
@@ -289,7 +290,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("CALL NC, a16" , call::nc,             3, 3), // 6 if branch taken
     OpCode("PUSH DE"      , stack::push::de,      1, 4),
     OpCode("SUB A, d8"    , sub::imm,             2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 2"        , rst::rst_2,           1, 1),
     OpCode("RET C"        , ret::c,               1, 2), // 5 if branch taken
     OpCode("RETI"         , interrupt::reti,      1, 1),
     OpCode("JP C, a16"    , jp::c,                3, 3), // 4 if branch taken
@@ -297,7 +298,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("CALL C, a16"  , call::c,              3, 3), // 6 if branch taken
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("SBC A, d8"    , sbc::imm,             2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 3"        , rst::rst_3,           1, 1),
 
     // 0xE_
     OpCode("LDH (a8), A"  , ldh::addr::a,         2, 3),
@@ -307,7 +308,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("PUSH HL"      , stack::push::hl,      1, 4),
     OpCode("AND A, d8"    , logic::and::imm,      2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 4"        , rst::rst_4,           1, 1),
     OpCode("ADD SP, r8"   , add::sp::r8,          2, 4),
     OpCode("JP (HL)"      , jp::hl_ind,           1, 1),
     OpCode("LD (a16), A"  , ld::addr::a,          3, 4),
@@ -315,7 +316,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("XOR A, d8"    , logic::xor::imm,      2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 5"        , rst::rst_5,           1, 1),
 
     // 0xF_
     OpCode("LDH A, (a8)"  , ldh::a::addr,         2, 3),
@@ -325,7 +326,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("PUSH AF"      , stack::push::af,      1, 4),
     OpCode("OR A, d8"     , logic::or::imm,       2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 6"        , rst::rst_6,           1, 1),
     OpCode("LD HL, SP+r8" , ld::hl::sp_add_reg,   2, 3),
     OpCode("LD SP, HL"    , ld::sp::hl,           1, 2),
     OpCode("LD A, (a16)"  , ld::a::addr,          3, 4),
@@ -333,7 +334,7 @@ pub const OPCODES: [OpCode; 256] = [
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("UDF"          , undefined,            1, 1),
     OpCode("CP A, d8"     , logic::cp::imm,       2, 2),
-    OpCode("UDF"          , undefined,            1, 1),
+    OpCode("RST 7"        , rst::rst_7,           1, 1),
 ];
 
 fn undefined(_: &mut Cpu) {
