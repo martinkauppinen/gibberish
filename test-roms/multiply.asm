@@ -22,7 +22,20 @@ start:
     ld b, $F
     call multiply
 
-    halt
+    di
+    ; Enable V-Blank interrupt
+    ld hl, $FFFF
+    ld a, 1
+    ld [hl], a
+                
+    ; Request V-Blank interrupt
+    ld hl, $FF0F
+    ld [hl], a
+    ld hl, $0040
+    ld a, $D3       ; Invalid opcode
+    ld [hl], a
+    ei              ; This will crash the emulator
+    nop
     
 ; Multiply A with B through repeated addition
 ; Result is stored in A

@@ -11,7 +11,7 @@ default: $(ALL_ROMS)
 	$(FIX) -v -p 0xFF $@
 
 %.o: %.asm
-	$(AS) -o $@ $^
+	$(AS) --halt-without-nop -o $@ $^
 
 .PHONY: clean
 clean:
