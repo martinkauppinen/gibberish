@@ -1,4 +1,7 @@
 use crate::memory::ram::Ram;
+use crate::memory::region::MemoryRegion;
+
+use super::ioregs::IoRegs;
 
 #[derive(Debug, Clone)]
 pub struct MemoryMap {
@@ -9,7 +12,7 @@ pub struct MemoryMap {
     iram: Ram,
     iram_echo: Ram,
     sprite_attrs: Ram,
-    io_regs: Ram,
+    io_regs: IoRegs,
     hram: Ram,
     int_enable_reg: u8,
 }
@@ -29,10 +32,14 @@ impl MemoryMap {
             iram: Ram::new(IRAM_START, IRAM_END),
             iram_echo: Ram::new(IRAM_ECHO_START, IRAM_ECHO_END),
             sprite_attrs: Ram::new(SPRITE_ATTRS_START, SPRITE_ATTRS_END),
-            io_regs: Ram::new(IO_REGS_START, IO_REGS_END),
+            io_regs: IoRegs::new(),
             hram: Ram::new(HRAM_START, HRAM_END),
             int_enable_reg: 0,
         }
+    }
+
+    pub fn get_io_regs_mut(&mut self) -> &mut IoRegs {
+        &mut self.io_regs
     }
 
     pub fn read_byte(&self, addr: u16) -> u8 {

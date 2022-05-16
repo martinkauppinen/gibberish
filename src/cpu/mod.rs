@@ -1,4 +1,4 @@
-mod interrupts;
+pub mod interrupts;
 mod opcodes;
 
 use crate::memory::map::MemoryMap;
@@ -51,6 +51,7 @@ impl Cpu {
         cpu.registers.sp = 0xFFFE;
 
         // Timer registers
+        cpu.write_byte(0x00, 0xFF04); // DIV
         cpu.write_byte(0x00, 0xFF05); // TIMA
         cpu.write_byte(0x00, 0xFF06); // TMA
         cpu.write_byte(0x00, 0xFF07); // TAC
@@ -125,7 +126,7 @@ impl Cpu {
         }
 
         self.machine_cycles += cycles;
-
+        self.increment_timers();
         if !self.inhibit_pc {
             self.registers.pc = self.registers.pc.wrapping_add(size as u16);
         }
@@ -173,6 +174,22 @@ impl Cpu {
                 self.mode = RunningMode::Running;
             }
         }
+    }
+
+    /// Increment the timers, requesting an interrupt on overflow
+    fn increment_timers(&mut self) {
+        if let Some(interrupt) = self
+            .memory
+            .get_io_regs_mut()
+            .get_timer_mut()
+            .tick(self.machine_cycles.into())
+        {
+            self.interrupts.request_interrupt(interrupt);
+        }
+    }
+
+    pub fn is_stopped(&self) -> bool {
+        self.mode == RunningMode::Stop
     }
 
     /// Print method for debugging

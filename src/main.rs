@@ -17,7 +17,7 @@ fn main() {
         cpu.write_byte(*b, i.try_into().unwrap());
     }
 
-    loop {
+    while !cpu.is_stopped() {
         cpu.print_status();
         cpu.step();
     }
