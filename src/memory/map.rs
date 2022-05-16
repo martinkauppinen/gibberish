@@ -57,8 +57,19 @@ impl MemoryMap {
             CART_START..=CART_END => self.cartridge.write_byte(byte, addr),
             VRAM_START..=VRAM_END => self.vram.write_byte(byte, addr),
             ERAM_START..=ERAM_END => self.eram.write_byte(byte, addr),
-            IRAM_START..=IRAM_END => self.iram.write_byte(byte, addr),
-            IRAM_ECHO_START..=IRAM_ECHO_END => self.iram_echo.write_byte(byte, addr),
+
+            // Make sure internal ram gets echoed
+            IRAM_START..=IRAM_END => {
+                self.iram.write_byte(byte, addr);
+                if addr - IRAM_START <= IRAM_ECHO_END - IRAM_ECHO_START {
+                    self.iram_echo.write_byte(byte, addr - IRAM_START + IRAM_ECHO_START);
+                }
+            },
+            IRAM_ECHO_START..=IRAM_ECHO_END => {
+                self.iram_echo.write_byte(byte, addr);
+                self.iram.write_byte(byte, addr - IRAM_ECHO_START + IRAM_START);
+            },
+
             SPRITE_ATTRS_START..=SPRITE_ATTRS_END => self.sprite_attrs.write_byte(byte, addr),
             IO_REGS_START..=IO_REGS_END => self.io_regs.write_byte(byte, addr),
             HRAM_START..=HRAM_END => self.hram.write_byte(byte, addr),
@@ -90,8 +101,19 @@ impl MemoryMap {
             CART_START..=CART_END => self.cartridge.write_word(word, addr),
             VRAM_START..=VRAM_END => self.vram.write_word(word, addr),
             ERAM_START..=ERAM_END => self.eram.write_word(word, addr),
-            IRAM_START..=IRAM_END => self.iram.write_word(word, addr),
-            IRAM_ECHO_START..=IRAM_ECHO_END => self.iram_echo.write_word(word, addr),
+
+            // Make sure internal ram gets echoed
+            IRAM_START..=IRAM_END => {
+                self.iram.write_word(word, addr);
+                if addr - IRAM_START <= IRAM_ECHO_END - IRAM_ECHO_START {
+                    self.iram_echo.write_word(word, addr - IRAM_START + IRAM_ECHO_START);
+                }
+            },
+            IRAM_ECHO_START..=IRAM_ECHO_END => {
+                self.iram_echo.write_word(word, addr);
+                self.iram.write_word(word, addr - IRAM_ECHO_START + IRAM_START);
+            },
+
             SPRITE_ATTRS_START..=SPRITE_ATTRS_END => self.sprite_attrs.write_word(word, addr),
             IO_REGS_START..=IO_REGS_END => self.io_regs.write_word(word, addr),
             HRAM_START..=HRAM_END => self.hram.write_word(word, addr),
